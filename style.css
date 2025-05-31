@@ -1,9 +1,8 @@
-
 body {
   margin: 0;
-  background-color: #f3f2ef; /* same as in current Orbita zine */
+  background-color: #f3f2ef;
   font-family: 'IBM Plex Mono', monospace;
-  overflow: hidden;
+  overflow: hidden; /* Hide scrollbars, important when elements expand */
 }
 #scene {
   position: absolute;
@@ -12,12 +11,52 @@ body {
 }
 .floating-item {
   position: absolute;
-  transition: transform 0.3s ease;
+  /* All properties that change on hover should be in transition */
+  transition: transform 0.4s ease-in-out, top 0.4s ease-in-out, left 0.4s ease-in-out,
+              z-index 0s 0.4s; /* z-index changes AFTER other transitions on mouseout */
+  cursor: pointer;
+  z-index: 1; /* Default z-index for normal floating items */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  box-sizing: border-box; /* Include padding in element's total size */
+  pointer-events: auto; /* Ensure it can always receive pointer events */
 }
+
+.item {
+  position: absolute;
+  z-index: 1; /* Default z-index for normal floating items */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  box-sizing: border-box; /* Include padding in element's total size */
+  background-color: #f3f2f0;
+
+}
+
+
+/* Initial styling for content inside floating items */
+.floating-item img {
+  width: 150px; /* Initial size from JS */
+  height: auto;
+  /*transition: max-width 0.4s ease-in-out, max-height 0.4s ease-in-out, width 0.4s ease-in-out, height 0.4s ease-in-out;*/
+  object-fit: contain;
+}
+
+
+
+/* Hover effect for almost fullscreen zoom */
 .floating-item:hover {
-  transform: scale(1.1);
-  filter: contrast(1.1);
+  z-index: 1000;
+  transform: scale(1.5); 
+
 }
+
+
+
+/* Info panel styles (unchanged) */
 #toggle-info {
   position: absolute;
   bottom: 20px;
@@ -27,6 +66,7 @@ body {
   padding: 10px;
   border: none;
   cursor: pointer;
+  z-index: 200; /* Ensure it's above normal floating items */
 }
 #info-panel {
   position: absolute;
@@ -37,6 +77,7 @@ body {
   padding: 20px;
   max-width: 300px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 200; /* Ensure it's above normal floating items */
 }
 .hidden {
   display: none;
