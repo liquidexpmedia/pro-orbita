@@ -9,20 +9,54 @@ body {
   width: 100vw;
   height: 100vh;
 }
+
+/* Estilos del overlay global */
+.overlay{
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
+    position: fixed; /* Asegura que cubra toda la ventana */
+    top: 0;
+    left: 0;
+    opacity: 0; /* Oculto por defecto */
+    transition: opacity 0.3s ease-in-out;
+    z-index: -1; /* Asegura que esté detrás de los elementos flotantes por defecto */
+    pointer-events: none; /* Permite clickar elementos detrás cuando está oculto */
+}
+
+
 .floating-item {
   position: absolute;
-  /* All properties that change on hover should be in transition */
+  /* Transiciones para la posición, el tamaño y la opacidad */
   transition: transform 0.4s ease-in-out, top 0.4s ease-in-out, left 0.4s ease-in-out,
-              z-index 0s 0.4s; /* z-index changes AFTER other transitions on mouseout */
+              z-index 0s 0.4s, opacity 0.3s ease-in-out;
   cursor: pointer;
   z-index: 1; /* Default z-index for normal floating items */
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  box-sizing: border-box; /* Include padding in element's total size */
-  pointer-events: auto; /* Ensure it can always receive pointer events */
+  box-sizing: border-box;
+  pointer-events: auto;
 }
+
+/* Estado de hover para centrar y escalar la imagen */
+.floating-item.is-hovered {
+  top: 50% !important; /* Mover al centro vertical */
+  left: 50% !important; /* Mover al centro horizontal */
+  transform: translate(-50%, -50%) scale(1.8); /* Centrar con transform y escalar */
+  z-index: 1000; /* Asegura que esté por encima del overlay y otros elementos */
+  pointer-events: auto; /* Mantener interactivo */
+}
+
+/* Ajuste de tamaño de la imagen dentro del floating-item cuando está en hover */
+.floating-item.is-hovered img {
+    max-width: 80vw; /* Ajusta el tamaño de la imagen en el centro */
+    max-height: 70vh;
+    width: auto; /* Permitir que la imagen se ajuste */
+    height: auto; /* Permitir que la imagen se ajuste */
+}
+
 
 .item {
   position: absolute;
@@ -31,7 +65,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  box-sizing: border-box; /* Include padding in element's total size */
+  box-sizing: border-box;
   background-color: #f3f2f0;
 
 }
@@ -41,20 +75,30 @@ body {
 .floating-item img {
   width: 150px; /* Initial size from JS */
   height: auto;
-  /*transition: max-width 0.4s ease-in-out, max-height 0.4s ease-in-out, width 0.4s ease-in-out, height 0.4s ease-in-out;*/
   object-fit: contain;
+  transition: max-width 0.4s ease-in-out, max-height 0.4s ease-in-out, width 0.4s ease-in-out, height 0.4s ease-in-out; /* Transición para el tamaño de la imagen */
+}
+
+/* Estilos para el texto que aparece en hover */
+.image-info {
+  background-color:#f3f2f0; /* Fondo del texto */
+  padding: 8px 12px;
+  opacity: 0; /* Oculto por defecto */
+  text-align: center;
+  font-size: 0.8em;
+  max-width: 80%; /* Limita el ancho del texto */
+  transform: translateY(10px); /* Un pequeño desplazamiento para el efecto */
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  margin-top: 10px; /* Espacio entre la imagen y el texto */
+  color: #333; /* Color de texto para que contraste con el fondo claro */
 }
 
 
-
-/* Hover effect for almost fullscreen zoom */
-.floating-item:hover {
-  z-index: 1000;
-  transform: scale(1.5); 
-
+/* El texto del floating-item se hace visible cuando el floating-item tiene la clase 'is-hovered' */
+.floating-item.is-hovered .image-info {
+  opacity: 1; /* Visible al hacer hover */
+  transform: translateY(0); /* Vuelve a la posición original */
 }
-
-
 
 /* Info panel styles (unchanged) */
 #toggle-info {
