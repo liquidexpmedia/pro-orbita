@@ -201,7 +201,7 @@ items.forEach((item, i) => {
           
           el.classList.remove('is-hovered');
           currentHoveredItem = null;
-          document.body.style.overflow = '';
+          document.body.style.overflow = 'hidden';
           
           // Resetear la posición del texto
           textDiv.style.top = '';
@@ -223,6 +223,26 @@ items.forEach((item, i) => {
   scene.appendChild(el);
 });
 
+// Funcionalidad del popup
 document.getElementById('toggle-info').onclick = () => {
-  document.getElementById('info-panel').classList.toggle('hidden');
+  const overlay = document.getElementById('popup-overlay');
+  overlay.classList.remove('hidden');
+  setTimeout(() => overlay.classList.add('show'), 10);
+  document.body.style.overflow = 'hidden';
+};
+
+document.getElementById('close-popup').onclick = () => {
+  const overlay = document.getElementById('popup-overlay');
+  overlay.classList.remove('show');
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+    document.body.style.overflow = 'hidden'; // Mantener overflow hidden para el mural
+  }, 300);
+};
+
+// Cerrar popup al hacer click en el overlay
+document.getElementById('popup-overlay').onclick = (e) => {
+  if (e.target === document.getElementById('popup-overlay')) {
+    document.getElementById('close-popup').click();
+  }
 };
