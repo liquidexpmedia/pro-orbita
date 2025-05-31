@@ -1,8 +1,16 @@
+@font-face {
+  font-family: 'Rebond Grotesque'; /* Name your font family */
+  src: url('fonts/Rebond Grotesque.otf'); /* Locate the .ttf file within your directory*/
+}
+
+
 body {
-  margin: 0;
-  background-color: #f3f2ef;
-  font-family: 'IBM Plex Mono', monospace;
-  overflow: hidden; /* Hide scrollbars, important when elements expand */
+   background-color: #201E18;
+  color: #201E18;
+  font-family: "Rebond Grotesque";
+  padding: 12px;
+  padding-top: 0px;
+  overflow: hidden;
 }
 #scene {
   position: absolute;
@@ -14,7 +22,7 @@ body {
 .overlay{
     width: 100%;
     height: 100%;
-    background-color: #f3f2f0; /* Fondo más sutil */
+    background-color: #201E18; /* Fondo más sutil */
     position: fixed; /* Asegura que cubra toda la ventana */
     top: 0;
     left: 0;
@@ -57,13 +65,14 @@ body {
 
 .item {
   position: absolute;
-  z-index: 1; /* Default z-index for normal floating items */
+  z-index: 2; /* Default z-index for normal floating items */
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   box-sizing: border-box;
-  background-color: #f3f2f0;
+  color: #f3f2f0;
+  background-color: #201E18;
 
 }
 
@@ -120,7 +129,7 @@ body {
   border: 1px solid rgba(0,0,0,0.1);
   cursor: pointer;
   z-index: 200;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'Rebond Grotesque';
   font-size: 12px;
   border-radius: 3px;
   transition: all 0.2s ease;
@@ -140,7 +149,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(243, 242, 239, 0.8);
+  background: #201E18;
   backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
@@ -164,7 +173,7 @@ body {
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'Rebond Grotesque';
   transform: translateY(20px);
   transition: transform 0.3s ease;
 }
@@ -236,27 +245,24 @@ body {
 
 /* Estilos para el título del zine en el lateral izquierdo */
 #zine-title-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vh; /* Ocupa el 100% de la altura de la ventana */
-  height: 100vw; /* Ocupa el 100% del ancho de la ventana, para rotar */
-  
-  /* Centrado y rotado para leer de abajo hacia arriba */
-  transform-origin: 0 0; /* Punto de pivote para la rotación */
-  transform: rotate(90deg) translateX(0) translateY(-100%); /* Rotar y mover a la posición */
-  
-  display: flex;
-  flex-direction: column; /* Para que título y fecha estén uno debajo del otro */
-  justify-content: center; /* Centra verticalmente dentro de la rotación */
-  align-items: flex-start; /* Alinea el texto a la izquierda dentro de la rotación */
-  
-  z-index: 0; /* Asegura que esté detrás de los elementos flotantes */
-  pointer-events: none; /* No debe interferir con la interacción de los elementos flotantes */
-  color: rgba(0, 0, 0, 0.08); /* Un poco más oscuro para más presencia */
-  font-family: 'IBM Plex Mono', monospace;
-  white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
-  padding-left: 20px; /* Espacio desde el borde izquierdo */
+      position: fixed;
+    top: 0;
+    left: 0;
+    /* width: 100vh; */
+    /* height: 100vw; */
+    /* transform-origin: 0 0; */
+    /* transform: rotate(90deg) translateX(0) translateY(-100%); */
+    /* display: flex
+; */
+    flex-direction: column;
+    justify-content: center;
+    /* align-items: flex-start; */
+    z-index: 0;
+    pointer-events: none;
+    color: #f3f2f0;
+    font-family: 'Rebond Grotesque';
+    white-space: nowrap;
+    padding-left: 20px;
 }
 
 .zine-title {
