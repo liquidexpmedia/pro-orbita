@@ -5,17 +5,156 @@ const globalOverlay = document.getElementById('global-overlay');
 const items = [
   { type: 'image', src: './assets/Issue1_g.png', text: '"Good Things Come To Those Who Wait" - Yinka Illori at Picadilly Circus London, 2024' },
   { type: 'image', src: './assets/Issue1_j.png', text: 'Descripción de la Imagen J' },
-  { type: 'text', content: '"Collaborating with diverse thinkers to work toward a greater understanding of the dynamics of race, gender, and class is essential for those of us who want to move beyond one-dimensional ways of thinking, being, and living." - Teaching Critical Thinking: Practical Wisdom bell hooks, 2009' }
+  { type: 'text', content: '"Collaborating with diverse thinkers to work toward a greater understanding of the dynamics of race, gender, and class is essential for those of us who want to move beyond one-dimensional ways of thinking, being, and living." - Teaching Critical Thinking: Practical Wisdom bell hooks, 2009' },
+  { type: 'image', src: './assets/Issue1_g.png', text: 'Otra imagen del mural' },
+  { type: 'image', src: './assets/Issue1_j.png', text: 'Una más para explorar' }
 ];
 
-let currentHoveredItem = null; // Variable para trackear el item actualmente en hover
+let currentHoveredItem = null;
+let occupiedPositions = []; // Array para guardar las posiciones ocupadas
+
+// Función para verificar si dos rectángulos se superponen más del 80%
+function getOverlapPercentage(rect1, rect2) {
+  const left = Math.max(rect1.left, rect2.left);
+  const right = Math.min(rect1.right, rect2.right);
+  const top = Math.max(rect1.top, rect2.top);
+  const bottom = Math.min(rect1.bottom, rect2.bottom);
+  
+  if (left < right && top < bottom) {
+    const overlapArea = (right - left) * (bottom - top);
+    const rect1Area = (rect1.right - rect1.left) * (rect1.bottom - rect1.top);
+    const rect2Area = (rect2.right - rect2.left) * (rect2.bottom - rect2.top);
+    const minArea = Math.min(rect1Area, rect2Area);
+    
+    return (overlapArea / minArea) * 100;
+  }
+  return 0;
+}
+
+// Función para verificar si una posición es válida (no se superpone más del 80%)
+function isPositionValid(newRect, maxOverlap = 15) {
+  for (let occupiedRect of occupiedPositions) {
+    if (getOverlapPercentage(newRect, occupiedRect) > maxOverlap) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Función para calcular posición segura que no se salga de pantalla al hacer zoom
+function getSafePosition(scale = 3.5, itemSize = 200) {
+  const margin = 30; // Margen más grande para la escala mayor
+  const expandedSize = itemSize * scale;
+  
+  // Calcular el rango seguro para que el item expandido no se salga
+  const minPercent = ((expandedSize / 2) + margin) / window.innerWidth * 100;
+  const maxPercent = 100 - ((expandedSize / 2) + margin) / window.innerWidth * 100;
+  
+  const minPercentHeight = ((expandedSize / 2) + margin) / window.innerHeight * 100;
+  const maxPercentHeight = 100 - ((expandedSize / 2) + margin) / window.innerHeight * 100;
+  
+  let attempts = 0;
+  const maxAttempts = 50000; // Máximo número de intentos para encontrar una posición válida
+  
+  while (attempts < maxAttempts) {
+    const leftPercent = Math.random() * (maxPercent - minPercent) + minPercent;
+    const topPercent = Math.random() * (maxPercentHeight - minPercentHeight) + minPercentHeight;
+    
+    // Convertir porcentajes a píxeles para verificar superposición
+    const leftPx = (leftPercent / 100) * window.innerWidth;
+    const topPx = (topPercent / 100) * window.innerHeight;
+    
+    const newRect = {
+      left: leftPx - itemSize / 2,
+      right: leftPx + itemSize / 2,
+      top: topPx - itemSize / 2,
+      bottom: topPx + itemSize / 2
+    };
+    
+    // Verificar si esta posición es válida
+    if (isPositionValid(newRect)) {
+      // Guardar la posición como ocupada
+      occupiedPositions.push(newRect);
+      
+      return {
+        left: leftPercent,
+        top: topPercent
+      };
+    }
+    
+    attempts++;
+  }
+  
+  // Si no se encuentra una posición válida después de muchos intentos,
+  // usar una posición aleatoria de respaldo
+  const fallbackLeft = Math.random() * (maxPercent - minPercent) + minPercent;
+  const fallbackTop = Math.random() * (maxPercentHeight - minPercentHeight) + minPercentHeight;
+  
+  // Guardar también la posición de respaldo
+  const fallbackLeftPx = (fallbackLeft / 100) * window.innerWidth;
+  const fallbackTopPx = (fallbackTop / 100) * window.innerHeight;
+  
+  occupiedPositions.push({
+    left: fallbackLeftPx - itemSize / 2,
+    right: fallbackLeftPx + itemSize / 2,
+    top: fallbackTopPx - itemSize / 2,
+    bottom: fallbackTopPx + itemSize / 2
+  });
+  
+  return {
+    left: fallbackLeft,
+    top: fallbackTop
+  };
+}
+
+// Función para posicionar el texto de descripción de manera que siempre sea visible
+function positionTextInfo(floatingItem, textElement) {
+  const itemRect = floatingItem.getBoundingClientRect();
+  const textRect = textElement.getBoundingClientRect();
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+  
+  // Calcular la posición del elemento escalado
+  const scaledWidth = itemRect.width;
+  const scaledHeight = itemRect.height;
+  const centerX = itemRect.left + itemRect.width / 2;
+  const centerY = itemRect.top + itemRect.height / 2;
+  
+  // Posición inicial: debajo del elemento
+  let topPosition = scaledHeight / 2 + 15; // Menos espacio para texto más discreto
+  let leftPosition = 0; // Centrado por defecto con transform: translateX(-50%)
+  
+  // Verificar si el texto se saldría por la parte inferior
+  if (centerY + topPosition + textRect.height > windowHeight - 15) {
+    // Mover el texto arriba del elemento
+    topPosition = -(scaledHeight / 2 + textRect.height + 15);
+  }
+  
+  // Verificar si el texto se saldría por los lados
+  const textLeftEdge = centerX - textRect.width / 2;
+  const textRightEdge = centerX + textRect.width / 2;
+  
+  if (textLeftEdge < 15) {
+    // El texto se sale por la izquierda, ajustar hacia la derecha
+    leftPosition = 15 - textLeftEdge;
+  } else if (textRightEdge > windowWidth - 15) {
+    // El texto se sale por la derecha, ajustar hacia la izquierda
+    leftPosition = (windowWidth - 15) - textRightEdge;
+  }
+  
+  // Aplicar las posiciones calculadas
+  textElement.style.top = `${topPosition}px`;
+  textElement.style.left = `${leftPosition}px`;
+}
 
 items.forEach((item, i) => {
   const el = document.createElement('div');
+  const itemSize = item.type === 'image' ? 200 : 300; // Diferentes tamaños para imagen y texto
 
-  // Establecer posición inicial aleatoria
-  el.style.top = `${Math.random() * (60 - 10) + 10}%`;
-  el.style.left = `${Math.random() * (60 - 10) + 10}%`;
+  // Establecer posición inicial segura sin superposición excesiva
+  const position = getSafePosition(3.5, itemSize);
+  el.style.top = `${position.top}%`;
+  el.style.left = `${position.left}%`;
 
   if (item.type === 'image') {
     el.className = 'floating-item';
@@ -30,21 +169,45 @@ items.forEach((item, i) => {
     textDiv.textContent = item.text;
     el.appendChild(textDiv);
 
-    // Solo añadir mouseenter, NO mouseleave
+    // Hover para hacer zoom in-place
     el.addEventListener('mouseenter', () => {
-      // Si ya hay otro item en hover, quitarle el hover primero
+      // Si hay otro item activo, quitarle el hover
       if (currentHoveredItem && currentHoveredItem !== el) {
         currentHoveredItem.classList.remove('is-hovered');
       }
       
       currentHoveredItem = el;
       
-      globalOverlay.style.opacity = '1';
+      // Mostrar overlay sutil
+      globalOverlay.style.opacity = '0.6';
       globalOverlay.style.zIndex = '9';
-      globalOverlay.style.pointerEvents = 'auto'; // Hacer el overlay clickeable
 
       el.classList.add('is-hovered');
       document.body.style.overflow = 'hidden';
+      
+      // Posicionar el texto después de que la transición de escala haya comenzado
+      setTimeout(() => {
+        positionTextInfo(el, textDiv);
+      }, 50);
+    });
+
+    // Salir del hover individual
+    el.addEventListener('mouseleave', () => {
+      // Pequeño delay para evitar flickering
+      setTimeout(() => {
+        if (currentHoveredItem === el) {
+          globalOverlay.style.opacity = '0';
+          globalOverlay.style.zIndex = '-1';
+          
+          el.classList.remove('is-hovered');
+          currentHoveredItem = null;
+          document.body.style.overflow = '';
+          
+          // Resetear la posición del texto
+          textDiv.style.top = '';
+          textDiv.style.left = '';
+        }
+      }, 100);
     });
 
   } else if (item.type === 'text') {
@@ -53,35 +216,11 @@ items.forEach((item, i) => {
     p.textContent = item.content;
     p.style.maxWidth = '500px';
     el.appendChild(p);
+    
+    // La posición ya se estableció arriba con getSafePosition
   }
 
   scene.appendChild(el);
-});
-
-// Manejar el mouseleave en el overlay global
-globalOverlay.addEventListener('mouseleave', () => {
-  if (currentHoveredItem) {
-    globalOverlay.style.opacity = '0';
-    globalOverlay.style.zIndex = '-1';
-    globalOverlay.style.pointerEvents = 'none';
-
-    currentHoveredItem.classList.remove('is-hovered');
-    currentHoveredItem = null;
-    document.body.style.overflow = '';
-  }
-});
-
-// También permitir cerrar haciendo click en el overlay
-globalOverlay.addEventListener('click', () => {
-  if (currentHoveredItem) {
-    globalOverlay.style.opacity = '0';
-    globalOverlay.style.zIndex = '-1';
-    globalOverlay.style.pointerEvents = 'none';
-
-    currentHoveredItem.classList.remove('is-hovered');
-    currentHoveredItem = null;
-    document.body.style.overflow = '';
-  }
 });
 
 document.getElementById('toggle-info').onclick = () => {
