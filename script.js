@@ -1,12 +1,14 @@
 // Sample floating items
 const scene = document.getElementById('scene');
-const globalOverlay = document.getElementById('global-overlay'); // Obtener la referencia al overlay global
+const globalOverlay = document.getElementById('global-overlay');
 
 const items = [
   { type: 'image', src: './assets/Issue1_g.png', text: '"Good Things Come To Those Who Wait" - Yinka Illori at Picadilly Circus London, 2024' },
   { type: 'image', src: './assets/Issue1_j.png', text: 'Descripción de la Imagen J' },
-  { type: 'text', content: '“Collaborating with diverse thinkers to work toward a greater understanding of the dynamics of race, gender, and class is essential for those of us who want to move beyond one-dimensional ways of thinking, being, and living.” - Teaching Critical Thinking: Practical Wisdom bell hooks, 2009' }
+  { type: 'text', content: '"Collaborating with diverse thinkers to work toward a greater understanding of the dynamics of race, gender, and class is essential for those of us who want to move beyond one-dimensional ways of thinking, being, and living." - Teaching Critical Thinking: Practical Wisdom bell hooks, 2009' }
 ];
+
+let currentHoveredItem = null; // Variable para trackear el item actualmente en hover
 
 items.forEach((item, i) => {
   const el = document.createElement('div');
@@ -20,7 +22,7 @@ items.forEach((item, i) => {
 
     const img = document.createElement('img');
     img.src = item.src;
-    img.style.width = '200px'; // Initial size for the floating state
+    img.style.width = '200px';
     el.appendChild(img);
 
     const textDiv = document.createElement('div');
@@ -28,34 +30,58 @@ items.forEach((item, i) => {
     textDiv.textContent = item.text;
     el.appendChild(textDiv);
 
-    // Añadir eventos de mouseenter y mouseleave a cada floating-item
+    // Solo añadir mouseenter, NO mouseleave
     el.addEventListener('mouseenter', () => {
-      globalOverlay.style.opacity = '1'; // Mostrar el overlay global
-      globalOverlay.style.zIndex = '9'; // Asegurar que el overlay esté por debajo del item activo
+      // Si ya hay otro item en hover, quitarle el hover primero
+      if (currentHoveredItem && currentHoveredItem !== el) {
+        currentHoveredItem.classList.remove('is-hovered');
+      }
+      
+      currentHoveredItem = el;
+      
+      globalOverlay.style.opacity = '1';
+      globalOverlay.style.zIndex = '9';
+      globalOverlay.style.pointerEvents = 'auto'; // Hacer el overlay clickeable
 
-      // Mover el item al centro y escalarlo
-      el.classList.add('is-hovered'); // Añadir una clase para activar los estilos de hover
-      document.body.style.overflow = 'hidden'; // Evitar el scroll del body
-    });
-
-    el.addEventListener('mouseleave', () => {
-      globalOverlay.style.opacity = '0'; // Ocultar el overlay global
-      globalOverlay.style.zIndex = '-1'; // Ponerlo detrás de todo cuando no está activo
-
-      // Quitar la clase de hover para que vuelva a su posición original
-      el.classList.remove('is-hovered');
-      document.body.style.overflow = ''; // Habilitar el scroll del body
+      el.classList.add('is-hovered');
+      document.body.style.overflow = 'hidden';
     });
 
   } else if (item.type === 'text') {
     el.className = 'item';
     const p = document.createElement('p');
     p.textContent = item.content;
-    p.style.maxWidth = '500px'; // Initial max-width
+    p.style.maxWidth = '500px';
     el.appendChild(p);
   }
 
   scene.appendChild(el);
+});
+
+// Manejar el mouseleave en el overlay global
+globalOverlay.addEventListener('mouseleave', () => {
+  if (currentHoveredItem) {
+    globalOverlay.style.opacity = '0';
+    globalOverlay.style.zIndex = '-1';
+    globalOverlay.style.pointerEvents = 'none';
+
+    currentHoveredItem.classList.remove('is-hovered');
+    currentHoveredItem = null;
+    document.body.style.overflow = '';
+  }
+});
+
+// También permitir cerrar haciendo click en el overlay
+globalOverlay.addEventListener('click', () => {
+  if (currentHoveredItem) {
+    globalOverlay.style.opacity = '0';
+    globalOverlay.style.zIndex = '-1';
+    globalOverlay.style.pointerEvents = 'none';
+
+    currentHoveredItem.classList.remove('is-hovered');
+    currentHoveredItem = null;
+    document.body.style.overflow = '';
+  }
 });
 
 document.getElementById('toggle-info').onclick = () => {
