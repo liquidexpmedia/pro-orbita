@@ -42,13 +42,14 @@ body {
 
 /* Estado de hover para hacer zoom in-place */
 .floating-item.is-hovered {
-  transform: scale(3.5); /* Zoom más grande para hacer la imagen más protagonista */
+  transform: scale(3.5); /* Zoom más grande para hacer la imagen/video más protagonista */
   z-index: 1000; /* Asegura que esté por encima del overlay y otros elementos */
   pointer-events: auto; /* Mantener interactivo */
 }
 
-/* Ajuste de tamaño de la imagen dentro del floating-item cuando está en hover */
-.floating-item.is-hovered img {
+/* Ajuste de tamaño de la imagen y video dentro del floating-item cuando está en hover */
+.floating-item.is-hovered img,
+.floating-item.is-hovered video { /* Added video here */
     width: 200px; /* Mantener tamaño base, el zoom se hace por transform */
     height: auto;
 }
@@ -68,11 +69,12 @@ body {
 
 
 /* Initial styling for content inside floating items */
-.floating-item img {
+.floating-item img,
+.floating-item video { /* Added video here */
   width: 150px; /* Initial size from JS */
   height: auto;
   object-fit: contain;
-  transition: max-width 0.4s ease-in-out, max-height 0.4s ease-in-out, width 0.4s ease-in-out, height 0.4s ease-in-out; /* Transición para el tamaño de la imagen */
+  transition: max-width 0.4s ease-in-out, max-height 0.4s ease-in-out, width 0.4s ease-in-out, height 0.4s ease-in-out; /* Transición para el tamaño */
 }
 
 /* Estilos para el texto que aparece en hover */
@@ -84,7 +86,7 @@ body {
   font-size: 0.15em; /* Texto más pequeño */
   transform: translateY(10px); /* Un pequeño desplazamiento para el efecto */
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-  margin-top: 8px; /* Menos espacio entre la imagen y el texto */
+  margin-top: 8px; /* Menos espacio entre la imagen/video y el texto */
   color: #666; /* Color más sutil */
   box-shadow: 0 1px 4px rgba(0,0,0,0.08); /* Sombra más sutil */
   /* Nuevas propiedades para asegurar visibilidad completa */
@@ -230,4 +232,62 @@ body {
 
 .hidden {
   display: none;
+}
+
+/* Estilos para el título del zine en el lateral izquierdo */
+#zine-title-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vh; /* Ocupa el 100% de la altura de la ventana */
+  height: 100vw; /* Ocupa el 100% del ancho de la ventana, para rotar */
+  
+  /* Centrado y rotado para leer de abajo hacia arriba */
+  transform-origin: 0 0; /* Punto de pivote para la rotación */
+  transform: rotate(90deg) translateX(0) translateY(-100%); /* Rotar y mover a la posición */
+  
+  display: flex;
+  flex-direction: column; /* Para que título y fecha estén uno debajo del otro */
+  justify-content: center; /* Centra verticalmente dentro de la rotación */
+  align-items: flex-start; /* Alinea el texto a la izquierda dentro de la rotación */
+  
+  z-index: 0; /* Asegura que esté detrás de los elementos flotantes */
+  pointer-events: none; /* No debe interferir con la interacción de los elementos flotantes */
+  color: rgba(0, 0, 0, 0.08); /* Un poco más oscuro para más presencia */
+  font-family: 'IBM Plex Mono', monospace;
+  white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+  padding-left: 20px; /* Espacio desde el borde izquierdo */
+}
+
+.zine-title {
+  font-size: 10vw; /* Ajusta este valor para controlar el tamaño principal del título */
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+}
+
+.zine-date {
+  font-size: 2vw; /* Más pequeño que el título */
+  margin-top: 10px; /* Espacio entre título y fecha */
+  padding: 0;
+  font-weight: normal;
+}
+
+/* Ajustes para pantallas más pequeñas si es necesario */
+@media (max-width: 768px) {
+  #zine-title-overlay {
+    /* Ajusta el padding y el tamaño de la fuente para pantallas pequeñas */
+    padding-left: 15px;
+  }
+  .zine-title {
+    font-size: 15vw; /* Más grande en móviles para mantener la presencia */
+  }
+  .zine-date {
+    font-size: 3.5vw;
+  }
+}
+
+/* Asegura que el overlay global tenga mayor z-index que el título cuando está activo */
+#global-overlay {
+    z-index: 9; /* Ya estaba, pero lo reafirmo para contexto */
 }

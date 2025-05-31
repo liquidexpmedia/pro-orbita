@@ -7,7 +7,8 @@ const items = [
   { type: 'image', src: './assets/Issue1_j.png', text: 'Descripción de la Imagen J' },
   { type: 'text', content: '"Collaborating with diverse thinkers to work toward a greater understanding of the dynamics of race, gender, and class is essential for those of us who want to move beyond one-dimensional ways of thinking, being, and living." - Teaching Critical Thinking: Practical Wisdom bell hooks, 2009' },
   { type: 'image', src: './assets/Issue1_g.png', text: 'Otra imagen del mural' },
-  { type: 'image', src: './assets/Issue1_j.png', text: 'Una más para explorar' }
+  { type: 'image', src: './assets/Issue1_j.png', text: 'Una más para explorar' },
+  { type: 'video', src: './assets/IMG_1158.webm', text: 'Video de muestra del proyecto de arte interactivo' } // Nuevo elemento de video
 ];
 
 let currentHoveredItem = null;
@@ -149,20 +150,32 @@ function positionTextInfo(floatingItem, textElement) {
 
 items.forEach((item, i) => {
   const el = document.createElement('div');
-  const itemSize = item.type === 'image' ? 200 : 300; // Diferentes tamaños para imagen y texto
+  const itemSize = item.type === 'image' || item.type === 'video' ? 200 : 150; // Diferentes tamaños para imagen/video y texto
 
   // Establecer posición inicial segura sin superposición excesiva
   const position = getSafePosition(3.5, itemSize);
   el.style.top = `${position.top}%`;
   el.style.left = `${position.left}%`;
 
-  if (item.type === 'image') {
+  if (item.type === 'image' || item.type === 'video') {
     el.className = 'floating-item';
 
-    const img = document.createElement('img');
-    img.src = item.src;
-    img.style.width = '200px';
-    el.appendChild(img);
+    let mediaElement;
+    if (item.type === 'image') {
+      mediaElement = document.createElement('img');
+      mediaElement.src = item.src;
+    } else { // item.type === 'video'
+      mediaElement = document.createElement('video');
+      mediaElement.src = item.src;
+      mediaElement.loop = true; // Loop the video
+      mediaElement.muted = true; // Mute by default for autoplay
+      mediaElement.preload = 'auto'; // Preload video for smoother playback
+      mediaElement.playsInline = true; // Important for iOS autoplay
+      mediaElement.style.width = '150px'; // Initial size for video
+      mediaElement.style.height = 'auto';
+    }
+    
+    el.appendChild(mediaElement);
 
     const textDiv = document.createElement('div');
     textDiv.className = 'image-info';
@@ -174,6 +187,11 @@ items.forEach((item, i) => {
       // Si hay otro item activo, quitarle el hover
       if (currentHoveredItem && currentHoveredItem !== el) {
         currentHoveredItem.classList.remove('is-hovered');
+        // If the previously hovered item was a video, pause it
+        const prevVideo = currentHoveredItem.querySelector('video');
+        if (prevVideo) {
+          prevVideo.pause();
+        }
       }
       
       currentHoveredItem = el;
@@ -184,6 +202,14 @@ items.forEach((item, i) => {
 
       el.classList.add('is-hovered');
       document.body.style.overflow = 'hidden';
+      
+      // Play video on hover
+      if (item.type === 'video') {
+        mediaElement.play().catch(error => {
+          console.error("Autoplay failed:", error);
+          // Fallback if autoplay is blocked: show play button or message
+        });
+      }
       
       // Posicionar el texto después de que la transición de escala haya comenzado
       setTimeout(() => {
@@ -202,6 +228,11 @@ items.forEach((item, i) => {
           el.classList.remove('is-hovered');
           currentHoveredItem = null;
           document.body.style.overflow = 'hidden';
+          
+          // Pause video on mouse leave
+          if (item.type === 'video') {
+            mediaElement.pause();
+          }
           
           // Resetear la posición del texto
           textDiv.style.top = '';
