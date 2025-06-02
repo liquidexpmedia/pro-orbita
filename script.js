@@ -3,10 +3,10 @@ const scene = document.getElementById('scene');
 const globalOverlay = document.getElementById('global-overlay');
 
 const items = [
-  { type: 'image', src: './assets/Issue1_g.png', text: '"Good Things Come To Those Who Wait" - Yinka Illori at Picadilly Circus London, 2024' },
+  { type: 'image', src: './assets/Issue1_g.png', text: '"Good Things Come To Those Who Wait" \n- Yinka Illori at Picadilly Circus London, 2024' },
   { type: 'image', src: './assets/Issue1_j.png', text: '"Infinite Accumulation" - Yayoi Kusama at Liverpool Street Station London, 2024' },
   { type: 'text', content: '"Collaborating with diverse thinkers to work toward a greater understanding of the dynamics of race, gender, and class is essential for those of us who want to move beyond one-dimensional ways of thinking, being, and living." - Teaching Critical Thinking: Practical Wisdom bell hooks, 2009' },
-  { type: 'image', src: './assets/Issue1_c.png', text: '"The Encyclopedia of Invisibility and Six Thousand Years" - Tavares Strachan' },
+  { type: 'image', src: './assets/Issue1_c.png', text: '"The Encyclopedia of \nInvisibility and Six Thousand Years" \n- Tavares Strachan' },
   { type: 'video', src: './assets/IMG_1158.webm', text: 'Video de muestra del proyecto de arte interactivo' },
   { type: 'text', content: '"For me, one of the things about artistic practice is that it\'s not about providing some solution, but instead provoking curiosity about some things that you should find on your own and not be led to." - Tavares Strachan The Brooklyn Rail, 2022' }
 ];
@@ -218,26 +218,103 @@ function positionTextInfo(floatingItem, textElement) {
   const centerX = itemRect.left + itemRect.width / 2;
   const centerY = itemRect.top + itemRect.height / 2;
   
-  let topPosition = scaledHeight / 2 + 15;
-  let leftPosition = 0;
+  const margin = 20; // Margen mínimo desde los bordes
   
-  // Verificar si el texto se saldría por la parte inferior
-  if (centerY + topPosition + textRect.height > windowHeight - 15) {
-    topPosition = -(scaledHeight / 2 + textRect.height + 15);
+  // Calcular posiciones posibles
+  const positions = {
+    bottom: {
+      top: scaledHeight / 2 + 15,
+      left: 0,
+      transform: 'translateX(-50%)'
+    },
+    top: {
+      top: -(scaledHeight / 2 + textRect.height + 15),
+      left: 0,
+      transform: 'translateX(-50%)'
+    },
+    right: {
+      top: -(textRect.height / 2),
+      left: scaledWidth / 2 + 15,
+      transform: 'translateX(0)'
+    },
+    left: {
+      top: -(textRect.height / 2),
+      left: -(scaledWidth / 2 + textRect.width + 15),
+      transform: 'translateX(0)'
+    }
+  };
+  
+  // Función para verificar si una posición es válida
+  function isPositionValid(pos) {
+    const testTop = centerY + pos.top;
+    const testLeft = centerX + pos.left;
+    const testRight = testLeft + textRect.width;
+    const testBottom = testTop + textRect.height;
+    
+    // Si usamos translateX(-50%), ajustamos los cálculos
+    if (pos.transform === 'translateX(-50%)') {
+      const adjustedLeft = testLeft - textRect.width / 2;
+      const adjustedRight = testLeft + textRect.width / 2;
+      return adjustedLeft >= margin && 
+             adjustedRight <= windowWidth - margin && 
+             testTop >= margin && 
+             testBottom <= windowHeight - margin;
+    }
+    
+    return testLeft >= margin && 
+           testRight <= windowWidth - margin && 
+           testTop >= margin && 
+           testBottom <= windowHeight - margin;
   }
   
-  // Verificar si el texto se saldría por los lados
-  const textLeftEdge = centerX - textRect.width / 2;
-  const textRightEdge = centerX + textRect.width / 2;
+  // Prioridad de posiciones: abajo, arriba, derecha, izquierda
+  const positionPriority = ['bottom', 'top', 'right', 'left'];
+  let selectedPosition = positions.bottom; // Por defecto
   
-  if (textLeftEdge < 15) {
-    leftPosition = 15 - textLeftEdge;
-  } else if (textRightEdge > windowWidth - 15) {
-    leftPosition = (windowWidth - 15) - textRightEdge;
+  // Buscar la primera posición válida
+  for (const posName of positionPriority) {
+    if (isPositionValid(positions[posName])) {
+      selectedPosition = positions[posName];
+      break;
+    }
   }
   
-  textElement.style.top = `${topPosition}px`;
-  textElement.style.left = `${leftPosition}px`;
+  // Si ninguna posición es completamente válida, usar la mejor aproximación
+  if (!isPositionValid(selectedPosition)) {
+    // Usar posición inferior pero ajustar para que quepa en pantalla
+    let topPos = scaledHeight / 2 + 15;
+    let leftPos = 0;
+    
+    // Ajustar verticalmente
+    if (centerY + topPos + textRect.height > windowHeight - margin) {
+      topPos = -(scaledHeight / 2 + textRect.height + 15);
+      // Si tampoco cabe arriba, centrarlo verticalmente
+      if (centerY + topPos < margin) {
+        topPos = -(textRect.height / 2);
+      }
+    }
+    
+    // Ajustar horizontalmente para centrado
+    const textLeftEdge = centerX - textRect.width / 2;
+    const textRightEdge = centerX + textRect.width / 2;
+    
+    if (textLeftEdge < margin) {
+      leftPos = margin - textLeftEdge;
+    } else if (textRightEdge > windowWidth - margin) {
+      leftPos = (windowWidth - margin) - textRightEdge;
+    }
+    
+    selectedPosition = {
+      top: topPos,
+      left: leftPos,
+      transform: 'translateX(-50%)'
+    };
+  }
+  
+  // Aplicar la posición seleccionada
+  textElement.style.top = `${selectedPosition.top}px`;
+  textElement.style.left = `${selectedPosition.left}px`;
+  textElement.style.transform = selectedPosition.transform;
 }
 
 // Mezclar items para distribución aleatoria
@@ -337,6 +414,7 @@ function createAndPositionItems() {
             
             textDiv.style.top = '';
             textDiv.style.left = '';
+            textDiv.style.transform = '';
           }
         }, 100);
       });
