@@ -36,6 +36,57 @@ const ITEM_CONFIGS = {
   }
 };
 
+// Crear elemento de información fijo en la esquina superior derecha
+function createFixedInfoBox() {
+  const infoBox = document.createElement('div');
+  infoBox.id = 'fixed-info-box';
+  infoBox.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 280px;
+    max-height: 200px;
+    background: rgba(243, 242, 239, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'Rebond Grotesque';
+    font-size: 12px;
+    line-height: 1.4;
+    color: #333;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    z-index: 500;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    overflow-y: auto;
+    white-space: pre-line;
+  `;
+  document.body.appendChild(infoBox);
+  return infoBox;
+}
+
+// Mostrar información en la caja fija
+function showFixedInfo(text) {
+  const infoBox = document.getElementById('fixed-info-box');
+  if (infoBox) {
+    infoBox.textContent = text;
+    infoBox.style.opacity = '1';
+    infoBox.style.transform = 'translateY(0)';
+  }
+}
+
+// Ocultar información de la caja fija
+function hideFixedInfo() {
+  const infoBox = document.getElementById('fixed-info-box');
+  if (infoBox) {
+    infoBox.style.opacity = '0';
+    infoBox.style.transform = 'translateY(-10px)';
+  }
+}
+
 // Función para obtener las dimensiones exactas de un elemento
 function getItemDimensions(itemType) {
   const config = ITEM_CONFIGS[itemType];
@@ -88,11 +139,12 @@ function getSafeViewportBounds(expandedWidth, expandedHeight) {
 
 // Sistema de cuadrícula adaptativa para distribución garantizada
 function createAdaptiveGrid(itemCount) {
+  // Esta función ahora solo se usa como referencia, 
+  // la nueva función createOrganicGrid es más específica
   const aspectRatio = window.innerWidth / window.innerHeight;
   let cols = Math.ceil(Math.sqrt(itemCount * aspectRatio));
   let rows = Math.ceil(itemCount / cols);
   
-  // Ajustar si la cuadrícula es muy desproporcionada
   if (cols / rows > 2.5) {
     cols = Math.ceil(Math.sqrt(itemCount * 1.5));
     rows = Math.ceil(itemCount / cols);
@@ -101,220 +153,171 @@ function createAdaptiveGrid(itemCount) {
   return { cols, rows };
 }
 
-// Función principal para encontrar posición segura
-function findSafePosition(itemType) {
+// Función para crear grid orgánica considerando tamaños de elementos
+function createOrganicGrid(itemCount) {
+  const aspectRatio = window.innerWidth / window.innerHeight;
+  
+  // Calcular grid base pero considerando que necesitamos más espacio
+  let cols = Math.ceil(Math.sqrt(itemCount * aspectRatio * 0.8)); // Factor de reducción para más espacio
+  let rows = Math.ceil(itemCount / cols);
+  
+  // Ajustar para evitar grids muy rectangulares
+  if (cols / rows > 2.2) {
+    cols = Math.ceil(Math.sqrt(itemCount * 1.1));
+    rows = Math.ceil(itemCount / cols);
+  }
+  
+  // Asegurar que tengamos suficientes celdas
+  while (cols * rows < itemCount) {
+    if (cols <= rows) {
+      cols++;
+    } else {
+      rows++;
+    }
+  }
+  
+  return { cols, rows };
+}
+
+// Función mejorada para verificar colisiones considerando zoom
+function checkCollisionWithZoom(newRect, itemType, occupiedPositions) {
   const dimensions = getItemDimensions(itemType);
-  const bounds = getSafeViewportBounds(dimensions.expandedWidth, dimensions.expandedHeight);
+  const expandedRect = {
+    left: newRect.left - dimensions.expandedWidth / 4, // Margen para hover
+    right: newRect.right + dimensions.expandedWidth / 4,
+    top: newRect.top - dimensions.expandedHeight / 4,
+    bottom: newRect.bottom + dimensions.expandedHeight / 4
+  };
+  
+  for (let occupied of occupiedPositions) {
+    if (doRectsIntersect(expandedRect, occupied)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Función para obtener posición específica en la grid con anti-colisión mejorada
+function getRandomGridPosition(itemIndex, itemType) {
+  const dimensions = getItemDimensions(itemType);
+  
+  // Bounds más conservadores para elementos grandes
+  const extraMargin = itemType === 'text' ? 60 : 40;
+  const bounds = {
+    minX: extraMargin + dimensions.expandedWidth / 2,
+    maxX: window.innerWidth - extraMargin - dimensions.expandedWidth / 2,
+    minY: extraMargin + dimensions.expandedHeight / 2,
+    maxY: window.innerHeight - extraMargin - dimensions.expandedHeight / 2
+  };
   
   // Verificar que tengamos espacio suficiente
   if (bounds.minX >= bounds.maxX || bounds.minY >= bounds.maxY) {
-    console.warn('Viewport too small for safe positioning');
-    // Usar dimensiones reducidas como fallback
-    const reducedBounds = getSafeViewportBounds(dimensions.width, dimensions.height);
+    console.warn('Viewport too small for grid positioning');
+    const reducedBounds = {
+      minX: 30 + dimensions.width / 2,
+      maxX: window.innerWidth - 30 - dimensions.width / 2,
+      minY: 30 + dimensions.height / 2,
+      maxY: window.innerHeight - 30 - dimensions.height / 2
+    };
     bounds.minX = reducedBounds.minX;
     bounds.maxX = reducedBounds.maxX;
     bounds.minY = reducedBounds.minY;
     bounds.maxY = reducedBounds.maxY;
   }
   
-  const minSeparation = dimensions.margin;
-  
-  // Fase 1: Intento de posicionamiento aleatorio inteligente
-  const maxRandomAttempts = 200;
-  
-  for (let attempt = 0; attempt < maxRandomAttempts; attempt++) {
-    const centerX = bounds.minX + Math.random() * (bounds.maxX - bounds.minX);
-    const centerY = bounds.minY + Math.random() * (bounds.maxY - bounds.minY);
-    
-    const rect = {
-      left: centerX - dimensions.width / 2,
-      right: centerX + dimensions.width / 2,
-      top: centerY - dimensions.height / 2,
-      bottom: centerY + dimensions.height / 2
-    };
-    
-    if (isPositionFree(rect, minSeparation)) {
-      // Guardar la posición ocupada
-      occupiedRects.push(rect);
-      
-      return {
-        left: (centerX / window.innerWidth) * 100,
-        top: (centerY / window.innerHeight) * 100
-      };
-    }
-  }
-  
-  // Fase 2: Sistema de cuadrícula garantizada
-  const grid = createAdaptiveGrid(items.length);
+  const grid = createOrganicGrid(items.length);
   const cellWidth = (bounds.maxX - bounds.minX) / grid.cols;
   const cellHeight = (bounds.maxY - bounds.minY) / grid.rows;
   
-  // Encontrar la primera celda libre
-  for (let row = 0; row < grid.rows; row++) {
-    for (let col = 0; col < grid.cols; col++) {
-      const cellCenterX = bounds.minX + (col + 0.5) * cellWidth;
-      const cellCenterY = bounds.minY + (row + 0.5) * cellHeight;
+  // Calcular posición de celda para este item
+  const col = itemIndex % grid.cols;
+  const row = Math.floor(itemIndex / grid.cols);
+  
+  // Centro de la celda
+  const cellCenterX = bounds.minX + (col + 0.5) * cellWidth;
+  const cellCenterY = bounds.minY + (row + 0.5) * cellHeight;
+  
+  // Ruido más conservador basado en el tamaño de celda y elemento
+  const safeCellWidth = Math.max(cellWidth - dimensions.width, cellWidth * 0.3);
+  const safeCellHeight = Math.max(cellHeight - dimensions.height, cellHeight * 0.3);
+  
+  const noiseIntensity = itemType === 'text' ? 0.15 : 0.25; // Reducido para evitar colisiones
+  const maxVariationX = safeCellWidth * noiseIntensity;
+  const maxVariationY = safeCellHeight * noiseIntensity;
+  
+  let attempts = 0;
+  const maxAttempts = 20;
+  
+  while (attempts < maxAttempts) {
+    // Generar variación aleatoria
+    const variationX = (Math.random() - 0.5) * 2 * maxVariationX;
+    const variationY = (Math.random() - 0.5) * 2 * maxVariationY;
+    
+    const finalX = Math.max(bounds.minX, Math.min(bounds.maxX, cellCenterX + variationX));
+    const finalY = Math.max(bounds.minY, Math.min(bounds.maxY, cellCenterY + variationY));
+    
+    // Crear rectángulo de prueba
+    const testRect = {
+      left: finalX - dimensions.width / 2,
+      right: finalX + dimensions.width / 2,
+      top: finalY - dimensions.height / 2,
+      bottom: finalY + dimensions.height / 2
+    };
+    
+    // Verificar colisiones
+    if (!checkCollisionWithZoom(testRect, itemType, occupiedRects)) {
+      // Posición válida encontrada
+      occupiedRects.push(testRect);
       
-      // Añadir variación aleatoria dentro de la celda (máximo 30% del tamaño de celda)
-      const maxVariationX = cellWidth * 0.3;
-      const maxVariationY = cellHeight * 0.3;
-      const variationX = (Math.random() - 0.5) * maxVariationX;
-      const variationY = (Math.random() - 0.5) * maxVariationY;
+      return {
+        left: (finalX / window.innerWidth) * 100,
+        top: (finalY / window.innerHeight) * 100
+      };
+    }
+    
+    attempts++;
+    
+    // Si no encontramos posición, reducir el ruido
+    if (attempts > 10) {
+      const reducedVariationX = variationX * 0.5;
+      const reducedVariationY = variationY * 0.5;
       
-      const finalX = Math.max(bounds.minX, Math.min(bounds.maxX, cellCenterX + variationX));
-      const finalY = Math.max(bounds.minY, Math.min(bounds.maxY, cellCenterY + variationY));
+      const reducedX = Math.max(bounds.minX, Math.min(bounds.maxX, cellCenterX + reducedVariationX));
+      const reducedY = Math.max(bounds.minY, Math.min(bounds.maxY, cellCenterY + reducedVariationY));
       
-      const rect = {
-        left: finalX - dimensions.width / 2,
-        right: finalX + dimensions.width / 2,
-        top: finalY - dimensions.height / 2,
-        bottom: finalY + dimensions.height / 2
+      const reducedRect = {
+        left: reducedX - dimensions.width / 2,
+        right: reducedX + dimensions.width / 2,
+        top: reducedY - dimensions.height / 2,
+        bottom: reducedY + dimensions.height / 2
       };
       
-      if (isPositionFree(rect, minSeparation * 0.5)) { // Margen ligeramente reducido para cuadrícula
-        occupiedRects.push(rect);
+      if (!checkCollisionWithZoom(reducedRect, itemType, occupiedRects)) {
+        occupiedRects.push(reducedRect);
         
         return {
-          left: (finalX / window.innerWidth) * 100,
-          top: (finalY / window.innerHeight) * 100
+          left: (reducedX / window.innerWidth) * 100,
+          top: (reducedY / window.innerHeight) * 100
         };
       }
     }
   }
   
-  // Fase 3: Posicionamiento de emergencia (debería rara vez llegar aquí)
-  console.warn('Using emergency positioning for item:', itemType);
-  const emergencyIndex = occupiedRects.length;
-  const spiralRadius = 150;
-  const angle = emergencyIndex * 2.4; // Ángulo en radianes para distribución espiral
-  
-  const spiralX = window.innerWidth / 2 + Math.cos(angle) * (spiralRadius + emergencyIndex * 20);
-  const spiralY = window.innerHeight / 2 + Math.sin(angle) * (spiralRadius + emergencyIndex * 20);
-  
-  const emergencyRect = {
-    left: spiralX - dimensions.width / 2,
-    right: spiralX + dimensions.width / 2,
-    top: spiralY - dimensions.height / 2,
-    bottom: spiralY + dimensions.height / 2
+  // Fallback: usar centro de celda sin ruido
+  console.warn('Using fallback center position for item:', itemType);
+  const fallbackRect = {
+    left: cellCenterX - dimensions.width / 2,
+    right: cellCenterX + dimensions.width / 2,
+    top: cellCenterY - dimensions.height / 2,
+    bottom: cellCenterY + dimensions.height / 2
   };
   
-  occupiedRects.push(emergencyRect);
+  occupiedRects.push(fallbackRect);
   
   return {
-    left: (spiralX / window.innerWidth) * 100,
-    top: (spiralY / window.innerHeight) * 100
+    left: (cellCenterX / window.innerWidth) * 100,
+    top: (cellCenterY / window.innerHeight) * 100
   };
-}
-
-// Función para posicionar el texto de descripción de manera que siempre sea visible
-function positionTextInfo(floatingItem, textElement) {
-  const itemRect = floatingItem.getBoundingClientRect();
-  const textRect = textElement.getBoundingClientRect();
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  
-  const scaledWidth = itemRect.width;
-  const scaledHeight = itemRect.height;
-  const centerX = itemRect.left + itemRect.width / 2;
-  const centerY = itemRect.top + itemRect.height / 2;
-  
-  const margin = 20; // Margen mínimo desde los bordes
-  
-  // Calcular posiciones posibles
-  const positions = {
-    bottom: {
-      top: scaledHeight / 2 + 15,
-      left: 0,
-      transform: 'translateX(-50%)'
-    },
-    top: {
-      top: -(scaledHeight / 2 + textRect.height + 15),
-      left: 0,
-      transform: 'translateX(-50%)'
-    },
-    right: {
-      top: -(textRect.height / 2),
-      left: scaledWidth / 2 + 15,
-      transform: 'translateX(0)'
-    },
-    left: {
-      top: -(textRect.height / 2),
-      left: -(scaledWidth / 2 + textRect.width + 15),
-      transform: 'translateX(0)'
-    }
-  };
-  
-  // Función para verificar si una posición es válida
-  function isPositionValid(pos) {
-    const testTop = centerY + pos.top;
-    const testLeft = centerX + pos.left;
-    const testRight = testLeft + textRect.width;
-    const testBottom = testTop + textRect.height;
-    
-    // Si usamos translateX(-50%), ajustamos los cálculos
-    if (pos.transform === 'translateX(-50%)') {
-      const adjustedLeft = testLeft - textRect.width / 2;
-      const adjustedRight = testLeft + textRect.width / 2;
-      return adjustedLeft >= margin && 
-             adjustedRight <= windowWidth - margin && 
-             testTop >= margin && 
-             testBottom <= windowHeight - margin;
-    }
-    
-    return testLeft >= margin && 
-           testRight <= windowWidth - margin && 
-           testTop >= margin && 
-           testBottom <= windowHeight - margin;
-  }
-  
-  // Prioridad de posiciones: abajo, arriba, derecha, izquierda
-  const positionPriority = ['bottom', 'top', 'right', 'left'];
-  let selectedPosition = positions.bottom; // Por defecto
-  
-  // Buscar la primera posición válida
-  for (const posName of positionPriority) {
-    if (isPositionValid(positions[posName])) {
-      selectedPosition = positions[posName];
-      break;
-    }
-  }
-  
-  // Si ninguna posición es completamente válida, usar la mejor aproximación
-  if (!isPositionValid(selectedPosition)) {
-    // Usar posición inferior pero ajustar para que quepa en pantalla
-    let topPos = scaledHeight / 2 + 15;
-    let leftPos = 0;
-    
-    // Ajustar verticalmente
-    if (centerY + topPos + textRect.height > windowHeight - margin) {
-      topPos = -(scaledHeight / 2 + textRect.height + 15);
-      // Si tampoco cabe arriba, centrarlo verticalmente
-      if (centerY + topPos < margin) {
-        topPos = -(textRect.height / 2);
-      }
-    }
-    
-    // Ajustar horizontalmente para centrado
-    const textLeftEdge = centerX - textRect.width / 2;
-    const textRightEdge = centerX + textRect.width / 2;
-    
-    if (textLeftEdge < margin) {
-      leftPos = margin - textLeftEdge;
-    } else if (textRightEdge > windowWidth - margin) {
-      leftPos = (windowWidth - margin) - textRightEdge;
-    }
-    
-    selectedPosition = {
-      top: topPos,
-      left: leftPos,
-      transform: 'translateX(-50%)'
-    };
-  }
-  
-  // Aplicar la posición seleccionada
-  textElement.style.top = `${selectedPosition.top}px`;
-  textElement.style.left = `${selectedPosition.left}px`;
-  textElement.style.transform = selectedPosition.transform;
 }
 
 // Mezclar items para distribución aleatoria
@@ -336,14 +339,19 @@ function createAndPositionItems() {
   // Resetear posiciones ocupadas
   occupiedRects = [];
   
-  // Mezclar items para variedad
+  // Crear caja de información fija si no existe
+  if (!document.getElementById('fixed-info-box')) {
+    createFixedInfoBox();
+  }
+  
+  // Mezclar items aleatoriamente para que aparezcan en celdas diferentes cada vez
   const shuffledItems = shuffleArray(items);
   
   shuffledItems.forEach((item, i) => {
     const el = document.createElement('div');
     
-    // Establecer posición segura garantizada
-    const position = findSafePosition(item.type);
+    // Usar posición de grid orgánica con ruido aleatorio
+    const position = getRandomGridPosition(i, item.type);
     el.style.top = `${position.top}%`;
     el.style.left = `${position.left}%`;
 
@@ -367,11 +375,6 @@ function createAndPositionItems() {
       
       el.appendChild(mediaElement);
 
-      const textDiv = document.createElement('div');
-      textDiv.className = 'image-info';
-      textDiv.textContent = item.text;
-      el.appendChild(textDiv);
-
       // Hover events
       el.addEventListener('mouseenter', () => {
         if (currentHoveredItem && currentHoveredItem !== el) {
@@ -388,15 +391,14 @@ function createAndPositionItems() {
         el.classList.add('is-hovered');
         document.body.style.overflow = 'hidden';
         
+        // Mostrar información en la caja fija
+        showFixedInfo(item.text);
+        
         if (item.type === 'video') {
           mediaElement.play().catch(error => {
             console.error("Autoplay failed:", error);
           });
         }
-        
-        setTimeout(() => {
-          positionTextInfo(el, textDiv);
-        }, 50);
       });
 
       el.addEventListener('mouseleave', () => {
@@ -408,13 +410,12 @@ function createAndPositionItems() {
             currentHoveredItem = null;
             document.body.style.overflow = 'hidden';
             
+            // Ocultar información de la caja fija
+            hideFixedInfo();
+            
             if (item.type === 'video') {
               mediaElement.pause();
             }
-            
-            textDiv.style.top = '';
-            textDiv.style.left = '';
-            textDiv.style.transform = '';
           }
         }, 100);
       });
