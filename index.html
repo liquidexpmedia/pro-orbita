@@ -4,39 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Órbita - Zine Vivo</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #201E18;
+      color: #f3f2f0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .loading {
+      text-align: center;
+    }
+    .spinner {
+      border: 2px solid rgba(243, 242, 239, 0.3);
+      border-top: 2px solid #f3f2f0;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-  <div id="scene">
-    <div class="overlay" id="global-overlay"></div>
+  <div class="loading">
+    <div class="spinner"></div>
+    <p>Verificando acceso...</p>
   </div>
   
-  <div id="zine-title-overlay">
-    <h1 class="zine-title">Orbita #1</h1>
-    <p class="zine-date">September 2024</p>
-  </div>
-  
-  <button id="toggle-info">+ contexto</button>
-  
-  <div id="popup-overlay" class="popup-overlay hidden">
-    <div id="info-panel" class="popup-panel">
-      <div class="popup-header">
-        <h2>Referencias de esta edición</h2>
-        <button id="close-popup" class="close-btn">×</button>
-      </div>
-      <div class="popup-content">
-        <p>Fabiola Larios es una artista visual mexicana que explora la intersección entre tecnología, arte y sociedad a través de instalaciones interactivas que cuestionan nuestras relaciones con los medios digitales.</p>
-        <p>Zach Lieberman desarrolla arte interactivo que invita a las audiencias a participar activamente. Su trabajo explora el potencial poético de la información, creando experiencias que son tanto divertidas como significativas.</p>
-        <p>Studio Moniker es un estudio de diseño que se especializa en arte interactivo y experiencias web experimentales, conocido por proyectos que desafían las convenciones del diseño digital.</p>
-        <p>bell hooks fue una autora, profesora y activista social estadounidense, conocida por su trabajo sobre las intersecciones de raza, género y clase en el contexto de los sistemas de opresión.</p>
-        <p>Yinka Shonibare es un artista británico-nigeriano conocido por sus esculturas, instalaciones, fotografías y películas que exploran temas culturales e identidad poscolonial.</p>
-        <p>El concepto de "zine vivo" surge de la tradición de las publicaciones independientes (fanzines) pero adaptado al medio digital interactivo, donde el contenido puede responder y cambiar según la interacción del usuario.</p>
-        <p>La estética minimalista y la tipografía monoespaciada reflejan una influencia del diseño suizo y la tradición tipográfica funcionalista, adaptada a interfaces digitales contemporáneas.</p>
-        <p>Los elementos flotantes representan la no-linealidad de la experiencia digital, permitiendo múltiples puntos de entrada y navegación libre, similar a los hipertextos de la web temprana.</p>
-      </div>
-    </div>
-  </div>
-  
-  <script src="script.js"></script>
+  <script>
+    // Verificar si el usuario ya tiene acceso
+    const hasAccess = localStorage.getItem('orbitaAccess');
+    
+    if (hasAccess === 'granted') {
+      // Redirigir al zine
+      window.location.href = 'zine.html';
+    } else {
+      // Redirigir a página de acceso
+      window.location.href = 'access.html';
+    }
+  </script>
 </body>
 </html>
