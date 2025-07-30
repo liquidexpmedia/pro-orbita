@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Órbita - Zine Vivo</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <style>
+    /* Basic styles for loading screen */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #201E18; /* Dark background similar to your theme */
+      color: #f3f2f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Rebond Grotesque', Arial, sans-serif;
+      text-align: center;
+      z-index: 99999; /* Above everything else */
+    }
+
+    #loading-screen h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    #loading-screen .spinner {
+      border: 4px solid rgba(243, 242, 239, 0.1);
+      border-top: 4px solid #f3f2f0;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Initially hide the main zine content */
+    #zine-container {
+      display: none;
+    }
+  </style>
+
+  <script src="qr-code-validator.js"></script> 
+</head>
+<body>
+  <div id="loading-screen">
+    <h2>Verificando Acceso...</h2>
+    <div class="spinner"></div>
+    <p>Por favor, espera un momento.</p>
+  </div>
+
+  <div id="zine-container">
+    <div id="scene">
+      <div class="overlay" id="global-overlay"></div>
+    </div>
+    
+    <div id="zine-title-overlay">
+      <h1 class="zine-title">Plotter Spectrum #1</h1>
+      <p class="zine-date">July 2025</p>
+    </div>
+    
+    <button id="toggle-info">+ contexto</button>
+    
+    <div id="popup-overlay" class="popup-overlay hidden">
+      <div id="info-panel" class="popup-panel">
+        <div class="popup-header">
+          <h2>Referencias de esta edición</h2>
+          <button id="close-popup" class="close-btn">×</button>
+        </div>
+        <div class="popup-content">
+          <p>Fabiola Larios es una artista visual mexicana que explora la intersección entre tecnología, arte y sociedad a través de instalaciones interactivas que cuestionan nuestras relaciones con los medios digitales.</p>
+          <p>Zach Lieberman desarrolla arte interactivo que invita a las audiencias a participar activamente. Su trabajo explora el potencial poético de la información, creando experiencias que son tanto divertidas como significativas.</p>
+          <p>Studio Moniker es un estudio de diseño que se especializa en arte interactivo y experiencias web experimentales, conocido por proyectos que desafían las convenciones del diseño digital.</p>
+          <p>bell hooks fue una autora, profesora y activista social estadounidense, conocida por su trabajo sobre las intersecciones de raza, género y clase en el contexto de los sistemas de opresión.</p>
+          <p>Yinka Shonibare es un artista británico-nigeriano conocido por sus esculturas, instalaciones, fotografías y películas que exploran temas culturales e identidad poscolonial.</p>
+          <p>El concepto de "zine vivo" surge de la tradición de las publicaciones independientes (fanzines) pero adaptado al medio digital interactivo, donde el contenido puede responder y cambiar según la interacción del usuario.</p>
+          <p>La estética minimalista y la tipografía monoespaciada reflejan una influencia del diseño suizo y la tradición tipográfica funcionalista, adaptada a interfaces digitales contemporáneas.</p>
+          <p>Los elementos flotantes representan la no-linealidad de la experiencia digital, permitiendo múltiples puntos de entrada y navegación libre, similar a los hipertextos de la web temprana.</p>
+        </div>
+      </div>
+    </div>
+  </div> <script src="script.js"></script>
+</body>
+</html>

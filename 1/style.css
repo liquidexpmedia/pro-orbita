@@ -304,3 +304,66 @@ body {
 #global-overlay {
     z-index: 9; /* Ya estaba, pero lo reafirmo para contexto */
 }
+
+/* Add to your existing style.css */
+
+#loading-screen, #access-denied-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #201E18; /* Dark background similar to your theme */
+  color: #f3f2f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Rebond Grotesque', Arial, sans-serif;
+  text-align: center;
+  z-index: 99999; /* Above everything else */
+}
+
+#loading-screen h2, #access-denied-screen h2 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+#loading-screen .spinner {
+  border: 4px solid rgba(243, 242, 239, 0.1);
+  border-top: 4px solid #f3f2f0;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#access-denied-screen p {
+  font-size: 1.1em;
+  margin-bottom: 30px;
+}
+
+#access-denied-screen button {
+  background: #4CAF50; /* Green button */
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+#access-denied-screen button:hover {
+  background-color: #45a049;
+}
+
+/* Initially hide the main zine content */
+#zine-container {
+  display: none;
+}

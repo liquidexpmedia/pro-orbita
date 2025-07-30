@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Órbita - Acceso Denegado</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #201E18 0%, #2a2620 100%);
+      color: #f3f2f0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 3em;
+      color: #f44336; /* Red for error */
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 1.2em;
+      max-width: 600px;
+      margin-bottom: 30px;
+    }
+    .back-link {
+      color: #f3f2f0;
+      text-decoration: none;
+      border: 1px solid #f3f2f0;
+      padding: 10px 20px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .back-link:hover {
+      background-color: #f3f2f0;
+      color: #201E18;
+    }
+  </style>
+</head>
+<body>
+  <h1>Acceso Denegado</h1>
+  <p>El código de acceso proporcionado es inválido o no existe.</p>
+  <p>Asegúrate de haber escaneado el QR correcto de tu zine.</p>
+  <a href="https://orbita-zine-pro.s3.eu-west-2.amazonaws.com/index.html" class="back-link">Volver a la Página Principal</a>
+</body>
+</html>
