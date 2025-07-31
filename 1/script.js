@@ -387,7 +387,7 @@ function createAndPositionItems() {
         
         currentHoveredItem = el;
         globalOverlay.style.opacity = '0.6';
-        globalOverlay.style.zIndex = '9';
+        globalOverlay.style.zIndex = '50';
         el.classList.add('is-hovered');
         document.body.style.overflow = 'hidden';
         
