@@ -10,7 +10,7 @@
     // ==========================================
     // !!! IMPORTANTE: REEMPLAZA ESTA URL CON EL ENLACE PÚBLICO DE TU JSON EN AWS S3 !!!
     // Ejemplo: 'https://tu-nombre-de-bucket.s3.tu-region.amazonaws.com/valid-zine-codes.json'
-    const JSON_CODES_URL = 'https://s3.eu-west-2.amazonaws.com/plotterspectrum.liquidexperimentalmedia.com/1/valid-zine-codes.json'; 
+    const JSON_CODES_URL = 'https://orbita-zine-pro.s3.eu-west-2.amazonaws.com/valid-zine-codes.json'; 
     const DENIED_PAGE_URL = 'denied.html'; // URL de la página de acceso denegado
 
     // ==========================================
