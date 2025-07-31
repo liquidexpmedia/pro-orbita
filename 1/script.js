@@ -3,8 +3,8 @@ const scene = document.getElementById('scene');
 const globalOverlay = document.getElementById('global-overlay');
 
 const items = [
-  { type: 'image', src: './assets/Issue1_g.png', text: '"Good Things Come To Those Who Wait" \n- Yinka Illori at Picadilly Circus London, 2024' },
-  { type: 'image', src: './assets/Issue1_j.png', text: '"Infinite Accumulation" - Yayoi Kusama at Liverpool Street Station London, 2024' },
+  { type: 'image', src: './assets/IMG_3264.jpg', text: '"Tracing the line book' },
+  { type: 'image', src: './assets/17431766839_66141c241a_b.jpg', text: '"Infinite Accumulation" - Yayoi Kusama at Liverpool Street Station London, 2024' },
   { type: 'text', content: '"Collaborating with diverse thinkers to work toward a greater understanding of the dynamics of race, gender, and class is essential for those of us who want to move beyond one-dimensional ways of thinking, being, and living." - Teaching Critical Thinking: Practical Wisdom bell hooks, 2009' },
   { type: 'image', src: './assets/Issue1_c.png', text: '"The Encyclopedia of \nInvisibility and Six Thousand Years" \n- Tavares Strachan' },
   { type: 'video', src: './assets/IMG_1158.webm', text: 'Video de muestra del proyecto de arte interactivo' },
