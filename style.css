@@ -54,7 +54,7 @@ body {
 /* Estado de hover para hacer zoom in-place */
 .floating-item.is-hovered {
   transform: scale(3.5); /* Zoom más grande para hacer la imagen/video más protagonista */
-  z-index: 1000; /* Asegura que esté por encima del overlay y otros elementos */
+  z-index: 40; /* Asegura que esté por encima del overlay y otros elementos */
   pointer-events: auto; /* Mantener interactivo */
 }
 
