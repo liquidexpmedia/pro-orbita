@@ -9,13 +9,14 @@ const globalOverlay = document.getElementById('global-overlay');
 const items = [
   { type: 'image', src: './assets/Issue1_g.png', text: '"Good Things Come To Those Who Wait" \n- Yinka Illori at Picadilly Circus London, 2024' },
   { type: 'image', src: './assets/Issue1_j.png', text: '"Infinite Accumulation" - Yayoi Kusama at Liverpool Street Station London, 2024' },
-  { type: 'text', content: '"Collaborating with diverse thinkers to work toward a greater understanding of the dynamics of race, gender, and class is essential for those of us who want to move beyond one-dimensional ways of thinking, being, and living." - Teaching Critical Thinking: Practical Wisdom bell hooks, 2009' },
+  { type: 'quote', content: '"Collaborating with diverse thinkers to work toward a greater understanding of the dynamics of race, gender, and class is essential for those of us who want to move beyond one-dimensional ways of thinking, being, and living." - Teaching Critical Thinking: Practical Wisdom bell hooks, 2009' },
   { type: 'image', src: './assets/Issue1_c.png', text: '"The Encyclopedia of \nInvisibility and Six Thousand Years" \n- Tavares Strachan' },
+  { type: 'title', content: 'Art & Technology: Bridging Worlds' },
   { type: 'video', src: './assets/IMG_1158.webm', text: 'Video de muestra del proyecto de arte interactivo' },
-  { type: 'text', content: '"For me, one of the things about artistic practice is that it\'s not about providing some solution, but instead provoking curiosity about some things that you should find on your own and not be led to." - Tavares Strachan The Brooklyn Rail, 2022' }
+  { type: 'quote', content: '"For me, one of the things about artistic practice is that it\'s not about providing some solution, but instead provoking curiosity about some things that you should find on your own and not be led to." - Tavares Strachan The Brooklyn Rail, 2022' }
 ];
 
-// Create gallery items with flexbox layout (no overlapping)
+// Create gallery items with organic positioning
 function createAndPositionItems() {
   scene.innerHTML = ''; // Clear existing items
 
@@ -23,6 +24,10 @@ function createAndPositionItems() {
     const el = document.createElement('div');
     el.className = 'floating-item';
     el.setAttribute('data-index', index);
+
+    // Add organic vertical positioning
+    const verticalOffset = Math.random() * 200 - 100; // Random offset between -100px and +100px
+    el.style.marginTop = `${verticalOffset}px`;
 
     // Add specific class based on item type for better styling
     if (item.type === 'image') {
@@ -54,8 +59,14 @@ function createAndPositionItems() {
       caption.className = 'caption';
       el.appendChild(caption);
       
-    } else if (item.type === 'text') {
-      el.classList.add('text-item');
+    } else if (item.type === 'quote') {
+      el.classList.add('text-item'); // Quote style - smaller, italic
+      const p = document.createElement('p');
+      p.textContent = item.content;
+      el.appendChild(p);
+      
+    } else if (item.type === 'title') {
+      el.classList.add('title-item'); // Title style - bigger, bold
       const p = document.createElement('p');
       p.textContent = item.content;
       el.appendChild(p);
@@ -71,7 +82,7 @@ function createAndPositionItems() {
   spacer.style.height = '1px'; // Minimal height
   scene.appendChild(spacer);
 
-  console.log('✅ Gallery items created successfully - no overlapping!');
+  console.log('✅ Gallery items created with organic positioning!');
 }
 
 // Ensure items are repositioned on resize
@@ -136,4 +147,4 @@ function initializePopup() {
   }
 }
 
-console.log('🎨 Gallery Wall Zine script loaded - horizontal scroll, no overlapping, responsive!');
+console.log('🎨 Gallery Wall Zine script loaded - organic positioning, titles & quotes!');

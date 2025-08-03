@@ -33,6 +33,7 @@ body {
   align-items: flex-start;
   padding: 20px;
   gap: 30px;
+  z-index: 100; /* Bring gallery items to front */
 }
 
 /* Estilos del overlay global - más sutil */
@@ -68,6 +69,7 @@ body {
   flex-shrink: 0;
   max-height: calc(100vh - 40px);
   overflow: hidden;
+  z-index: 100; /* Ensure items are in front */
 }
 
 /* Ensure no zoom effect on hover */
@@ -104,7 +106,7 @@ body {
   text-align: left;
 }
 
-/* Text items */
+/* Text items - Quote style (smaller text) */
 .floating-item.text-item {
   width: clamp(280px, 30vw, 450px);
   background-color: rgba(243, 242, 239, 0.12);
@@ -117,6 +119,25 @@ body {
   font-size: clamp(14px, 2.2vw, 16px);
   line-height: 1.5;
   text-align: left;
+  font-style: italic;
+}
+
+/* Title text items - bigger, bolder style */
+.floating-item.title-item {
+  width: clamp(320px, 35vw, 500px);
+  background-color: rgba(243, 242, 239, 0.15);
+  border: 3px solid rgba(243, 242, 239, 0.3);
+  border-radius: 12px;
+}
+
+.floating-item.title-item p {
+  margin: 0;
+  color: #f3f2f0;
+  font-size: clamp(18px, 3vw, 24px);
+  line-height: 1.3;
+  text-align: center;
+  font-weight: bold;
+  font-style: normal;
 }
 
 /* Video items */
@@ -290,9 +311,9 @@ body {
     top: 50%;
     left: 20px;
     transform: translateY(-50%);
-    z-index: 50; /* Ensure it's above items but below popups */
+    z-index: 10; /* Behind the gallery items */
     pointer-events: none; /* Allows clicks to pass through */
-    color: #f3f2f0;
+    color: rgba(243, 242, 239, 0.3); /* More transparent/background */
     font-family: 'Rebond Grotesque', Arial, sans-serif;
     white-space: nowrap;
 }
@@ -329,6 +350,10 @@ body {
 
   .floating-item.video-item {
     width: clamp(250px, 50vw, 400px);
+  }
+
+  .floating-item.title-item {
+    width: clamp(280px, 50vw, 400px);
   }
 
   #toggle-info {
