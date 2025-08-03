@@ -1,5 +1,5 @@
 // ==========================================
-// ÓRBITA #1 - ZINE VIVO (Diseño Móvil - Scroll Horizontal)
+// ÓRBITA #1 - ZINE VIVO (Diseño Móvil - Scroll Horizontal V2)
 // ==========================================
 
 const scene = document.getElementById('scene');
@@ -7,8 +7,9 @@ const globalOverlay = document.getElementById('global-overlay');
 
 // Define items for the zine
 const items = [
-  { type: 'image', src: './assets/IMG_3264.jpg', text: 'Tracing the line book' },
-  { type: 'image', src: './assets/17431766839_66141c241a_b.jpg', text: '"trial,be a plotter" by Michel Winterberg (2015)\nRandom VS Control “Trial, be a plotter” is an interactive installation in which the users head and mouth act as the interface for controlling a plotter. The result? Abstract, unpredictable drawings. What happens when the body becomes part of the drawing system? Would you choose precision or surprise? Which interface would give you more control or more randomness' },
+  { type: 'image', src: './assets/Issue1_g.png', text: '"Good Things Come To Those Who Wait" \n- Yinka Illori at Picadilly Circus London, 2024' },
+  { type: 'image', src: './assets/Issue1_j.png', text: '"Infinite Accumulation" - Yayoi Kusama at Liverpool Street Station London, 2024' },
+  { type: 'text', content: '"Collaborating with diverse thinkers to work toward a greater understanding of the dynamics of race, gender, and class is essential for those of us who want to move beyond one-dimensional ways of thinking, being, and living." - Teaching Critical Thinking: Practical Wisdom bell hooks, 2009' },
   { type: 'image', src: './assets/Issue1_c.png', text: '"The Encyclopedia of \nInvisibility and Six Thousand Years" \n- Tavares Strachan' },
   { type: 'video', src: './assets/IMG_1158.webm', text: 'Video de muestra del proyecto de arte interactivo' },
   { type: 'text', content: '"For me, one of the things about artistic practice is that it\'s not about providing some solution, but instead provoking curiosity about some things that you should find on your own and not be led to." - Tavares Strachan The Brooklyn Rail, 2022' }
@@ -17,10 +18,26 @@ const items = [
 // Configuration for placement
 const MIN_ITEM_WIDTH_VW = 30; // Minimum width of an item as a percentage of viewport width
 const MAX_ITEM_WIDTH_VW = 50; // Maximum width of an item as a percentage of viewport width
-const HORIZONTAL_SPREAD_FACTOR = 2.5; // How much wider the scrollable area is than the viewport
+const HORIZONTAL_SPREAD_FACTOR = 3; // How much wider the scrollable area is than the viewport (increased for more space)
+const ITEM_SPACING = 30; // Minimum spacing between items in pixels
+const MAX_PLACEMENT_ATTEMPTS_PER_ITEM = 500; // Max attempts to place a single item without overlap
+
+// Global variable to store occupied rectangles for collision detection
+let occupiedRects = [];
+
+// Helper function to check for overlap between two rectangles
+function isOverlapping(rect1, rect2) {
+    return !(
+        rect1.right < rect2.left ||
+        rect1.left > rect2.right ||
+        rect1.bottom < rect2.top ||
+        rect1.top > rect2.bottom
+    );
+}
 
 function createAndPositionItems() {
   scene.innerHTML = ''; // Clear existing items
+  occupiedRects = []; // Reset occupied rectangles for new placement
 
   // Define the total width of the scrollable content area
   const scrollableWidth = window.innerWidth * HORIZONTAL_SPREAD_FACTOR;
@@ -29,27 +46,14 @@ function createAndPositionItems() {
   items.forEach((item, index) => {
     const el = document.createElement('div');
     el.className = 'floating-item';
-    el.setAttribute('data-index', index); // Add data-index for potential future use
+    el.setAttribute('data-index', index);
+    el.style.visibility = 'hidden'; // Hide initially for dimension calculation
 
-    // Random item width (within a defined range)
+    // Set a temporary width for dimension calculation (based on viewport, as CSS uses vw)
     const itemWidthVw = MIN_ITEM_WIDTH_VW + Math.random() * (MAX_ITEM_WIDTH_VW - MIN_ITEM_WIDTH_VW);
     el.style.width = `${itemWidthVw}vw`;
-    // Height will auto-adjust based on content, but can add min-height if needed
-    el.style.minHeight = '25vh'; // Example: ensure some minimum height
-
-    // Positioning
-    // Random left position within the total scrollable width
-    const leftPos = Math.random() * (scrollableWidth - (itemWidthVw / 100 * window.innerWidth));
-    el.style.left = `${leftPos}px`;
-
-    // Random top position within the viewport height, with some padding
-    const topPadding = 100; // pixels from top/bottom
-    const topPos = topPadding + Math.random() * (window.innerHeight - el.offsetHeight - (topPadding * 2));
-    el.style.top = `${topPos}px`;
-    
-    // Random rotation for organic feel
-    const rotation = Math.random() * 10 - 5; // -5 to +5 degrees
-    el.style.transform = `rotate(${rotation}deg)`;
+    el.style.minHeight = '25vh'; // Ensure some minimum height
+    el.style.whiteSpace = 'normal'; // Allow text to wrap within text boxes
 
     // Add content based on type
     if (item.type === 'image') {
@@ -80,7 +84,63 @@ function createAndPositionItems() {
       el.appendChild(p);
     }
 
-    scene.appendChild(el);
+    scene.appendChild(el); // Append to DOM to get offsetWidth/Height
+
+    let placed = false;
+    for (let attempt = 0; attempt < MAX_PLACEMENT_ATTEMPTS_PER_ITEM; attempt++) {
+        // Get actual rendered dimensions of the element
+        const itemWidth = el.offsetWidth;
+        const itemHeight = el.offsetHeight;
+
+        // Calculate random left position within the total scrollable width
+        const leftPos = ITEM_SPACING + Math.random() * (scrollableWidth - itemWidth - (ITEM_SPACING * 2));
+        
+        // Calculate random top position within the viewport height, considering padding
+        const topPadding = 50; // pixels from top/bottom
+        const maxTop = window.innerHeight - itemHeight - (topPadding * 2);
+        // Ensure topPos stays within valid bounds
+        const topPos = topPadding + Math.random() * Math.max(0, maxTop - topPadding); 
+
+        const potentialRect = {
+            left: leftPos,
+            top: topPos,
+            right: leftPos + itemWidth,
+            bottom: topPos + itemHeight
+        };
+
+        let overlap = false;
+        for (const rect of occupiedRects) {
+            if (isOverlapping(potentialRect, rect)) {
+                overlap = true;
+                break;
+            }
+        }
+
+        if (!overlap) {
+            el.style.left = `${leftPos}px`;
+            el.style.top = `${topPos}px`;
+            el.style.visibility = 'visible'; // Make visible once placed successfully
+            occupiedRects.push(potentialRect);
+            placed = true;
+            break;
+        }
+    }
+
+    if (!placed) {
+        console.warn(`Could not place item ${index} without overlap after ${MAX_PLACEMENT_ATTEMPTS_PER_ITEM} attempts.`);
+        // Fallback: place it but it might overlap or be off-screen if no space found
+        el.style.left = `${ITEM_SPACING + Math.random() * (scrollableWidth - el.offsetWidth - (ITEM_SPACING * 2))}px`;
+        el.style.top = `${ITEM_SPACING + Math.random() * (window.innerHeight - el.offsetHeight - (ITEM_SPACING * 2))}px`;
+        el.style.visibility = 'visible';
+    }
+
+    // Apply rotation conditionally: no rotation for images
+    if (item.type === 'image') {
+        el.style.transform = 'none'; // No rotation for images, simulating a gallery wall
+    } else {
+        const rotation = Math.random() * 8 - 4; // -4 to +4 degrees for other items
+        el.style.transform = `rotate(${rotation}deg)`;
+    }
   });
 }
 
@@ -107,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleInfoBtn.onclick = () => {
       popupOverlay.classList.remove('hidden');
       setTimeout(() => popupOverlay.classList.add('show'), 10);
-      document.body.style.overflow = 'hidden'; // Prevent main scroll
+      document.body.style.overflow = 'hidden'; // Prevent main scroll when popup is open
     };
   }
 
@@ -116,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
       popupOverlay.classList.remove('show');
       setTimeout(() => {
         popupOverlay.classList.add('hidden');
-        document.body.style.overflow = ''; // Allow main scroll again
+        document.body.style.overflow = 'hidden'; // Keep main scroll blocked if it was (handled by body CSS)
       }, 300);
     };
   }
@@ -133,4 +193,4 @@ document.addEventListener('DOMContentLoaded', () => {
   createAndPositionItems();
 });
 
-console.log('🚀 Zine script (mobile-friendly) cargado.');
+console.log('🚀 Zine script (mobile-friendly V2) cargado.');

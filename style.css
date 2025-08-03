@@ -11,7 +11,7 @@ body {
   padding: 12px;
   padding-top: 0px;
   overflow-x: auto; /* Enable horizontal scrolling */
-  overflow-y: hidden; /* Hide vertical scrollbar */
+  overflow-y: hidden; /* **BLOCK VERTICAL SCROLL** */
   white-space: nowrap; /* Prevent inline elements from wrapping */
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   position: relative; /* For absolute positioning of children */
@@ -56,24 +56,23 @@ body {
   justify-content: center;
   align-items: center;
   box-sizing: border-box; /* Include padding and border in width/height */
-  /* Remove hover transform styles */
-  transition: transform 0.3s ease; /* Keep transition for random rotation */
+  transition: transform 0.3s ease, left 0.3s ease, top 0.3s ease; /* Keep transition for smooth placement/rotation */
 }
 
-/* Remove hover effect */
+/* Ensure no zoom effect on hover */
 .floating-item:hover {
-  /* No specific styles here to remove zoom */
-  /* You can add a subtle border or shadow change if you want a subtle hover feedback */
   border-color: rgba(243, 242, 239, 0.3);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .floating-item img, .floating-item video {
   max-width: 100%; /* Ensure images/videos fit within their container */
-  height: auto;
+  height: auto; /* **Crucial for responsive height** */
   display: block;
   margin: 0 auto 10px; /* Center and add space below */
   border-radius: 4px;
+  /* Ensure no direct rotation applied by CSS to images here */
+  /* transform: none; (handled by JS for specific item types) */
 }
 
 .floating-item p {
