@@ -53,10 +53,10 @@ body {
 .floating-item {
   position: relative;
   background-color: #201E18; /* Same as page background for seamless integration */
-  border: 1px solid rgba(243, 242, 239, 0.15);
+  border: none; /* Remove default border */
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: none; /* Remove default shadow */
   color: #f3f2f0;
   font-size: clamp(14px, 2.5vw, 18px);
   line-height: 1.4;
@@ -81,8 +81,8 @@ body {
 /* Image items - gallery wall style */
 .floating-item.image-item {
   width: clamp(250px, 25vw, 400px);
-  background-color: #f3f2f0;
-  border: 8px solid #f3f2f0;
+  background-color: #201E18; /* Same as page background */
+  border: none; /* Remove white frame */
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
   padding: 0;
 }
@@ -97,8 +97,8 @@ body {
 }
 
 .floating-item.image-item .caption {
-  background-color: #f3f2f0;
-  color: #201E18;
+  background-color: #201E18; /* Same as page background */
+  color: #f3f2f0; /* White text instead of dark */
   padding: 15px;
   margin: 0;
   font-size: clamp(12px, 1.8vw, 14px);
@@ -110,7 +110,7 @@ body {
 .floating-item.text-item {
   width: clamp(280px, 30vw, 450px);
   background-color: #201E18; /* Same as page background */
-  border: 2px solid rgba(243, 242, 239, 0.2);
+  border: none; /* Remove frame */
 }
 
 .floating-item.text-item p {
@@ -126,7 +126,7 @@ body {
 .floating-item.title-item {
   width: clamp(350px, 40vw, 600px);
   background-color: #201E18; /* Same as page background */
-  border: 3px solid rgba(243, 242, 239, 0.3);
+  border: none; /* Remove frame */
   border-radius: 12px;
   margin-top: 0 !important; /* Override random positioning */
   align-self: center; /* Center vertically in the flex container */
