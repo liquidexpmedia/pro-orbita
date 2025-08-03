@@ -5,25 +5,29 @@
 
 
 body {
-   background-color: #201E18;
-  color: #201E18;
+  background-color: #201E18;
+  color: #201E18; /* Default color for items, overridden by specific elements */
   font-family: "Rebond Grotesque";
   padding: 12px;
   padding-top: 0px;
-  overflow: hidden;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: hidden; /* Hide vertical scrollbar */
+  white-space: nowrap; /* Prevent inline elements from wrapping */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  position: relative; /* For absolute positioning of children */
+  height: 100vh; /* Ensure body takes full viewport height */
+  margin: 0;
 }
 
-
-
 #scene {
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
+  position: relative; /* Change from absolute to relative to contain floating items within it */
+  height: 100%; /* Take full height of the body */
+  /* Width will be set by JavaScript to enable horizontal scroll */
 }
 
 /* Estilos del overlay global - más sutil */
 .overlay{
-    width: 100%;
+    width: 100%; /* Will adapt to #scene's JS-set width */
     height: 100%;
     background-color: #201E18; /* Fondo más sutil */
     position: fixed; /* Asegura que cubra toda la ventana */
@@ -38,208 +42,157 @@ body {
 
 .floating-item {
   position: absolute;
-  /* Transiciones para la posición, el tamaño y la opacidad */
-  transition: transform 0.4s ease-in-out, top 0.4s ease-in-out, left 0.4s ease-in-out,
-              z-index 0s 0.4s, opacity 0.3s ease-in-out;
-  cursor: pointer;
-  z-index: 1; /* Default z-index for normal floating items */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  box-sizing: border-box;
-  pointer-events: auto;
-}
-
-/* Estado de hover para hacer zoom in-place */
-.floating-item.is-hovered {
-  transform: scale(3.5); /* Zoom más grande para hacer la imagen/video más protagonista */
-  z-index: 40; /* Asegura que esté por encima del overlay y otros elementos */
-  pointer-events: auto; /* Mantener interactivo */
-}
-
-/* Ajuste de tamaño de la imagen y video dentro del floating-item cuando está en hover */
-.floating-item.is-hovered img,
-.floating-item.is-hovered video { /* Added video here */
-    width: 200px; /* Mantener tamaño base, el zoom se hace por transform */
-    height: auto;
-}
-
-
-.item {
-  position: absolute;
-  z-index: 2; /* Default z-index for normal floating items */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  box-sizing: border-box;
-  color: #f3f2f0;
-  background-color: #201E18;
-
-}
-
-
-/* Initial styling for content inside floating items */
-.floating-item img,
-.floating-item video { /* Added video here */
-  width: 150px; /* Initial size from JS */
-  height: auto;
-  object-fit: contain;
-  transition: max-width 0.4s ease-in-out, max-height 0.4s ease-in-out, width 0.4s ease-in-out, height 0.4s ease-in-out; /* Transición para el tamaño */
-}
-
-/* Estilos para el texto que aparece en hover */
-/* Estilos para el texto que aparece en hover */
-.image-info {
-  background-color:#f3f2f0; /* Fondo del texto */
-  padding: 8px 12px; /* Padding aumentado para mejor legibilidad */
-  opacity: 0; /* Oculto por defecto */
+  background-color: rgba(243, 242, 239, 0.08); /* Slightly visible background */
+  border: 1px solid rgba(243, 242, 239, 0.15);
+  border-radius: 8px;
+  padding: 1.5vw; /* Responsive padding */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  color: #f3f2f0; /* Text color for items */
+  font-size: 1.8vw; /* Responsive font size */
+  line-height: 1.4;
   text-align: center;
-  font-size: 0.18em; /* Texto ligeramente más grande */
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, top 0.3s ease-in-out, left 0.3s ease-in-out;
-  color: #333; /* Color más oscuro para mejor contraste */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Sombra más prominente */
-  border-radius: 4px; /* Bordes redondeados */
-  /* Propiedades para asegurar visibilidad completa */
-  position: absolute;
-  max-width: 250px; /* Ancho máximo aumentado */
-  min-width: 120px; /* Ancho mínimo aumentado */
-  word-wrap: break-word;
-  white-space: normal;
-  line-height: 1.4; /* Altura de línea mejorada */
-  z-index: 1001;
-  /* Posicionamiento inicial - se ajusta dinámicamente */
-  left: 50%;
-  top: calc(50% + 100px); /* Posición inicial por defecto */
-  transform: translateX(-50%) translateY(10px);
-  pointer-events: none; /* Evita interferir con la interacción */
-  
- white-space: break-spaces;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box; /* Include padding and border in width/height */
+  /* Remove hover transform styles */
+  transition: transform 0.3s ease; /* Keep transition for random rotation */
+}
+
+/* Remove hover effect */
+.floating-item:hover {
+  /* No specific styles here to remove zoom */
+  /* You can add a subtle border or shadow change if you want a subtle hover feedback */
+  border-color: rgba(243, 242, 239, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.floating-item img, .floating-item video {
+  max-width: 100%; /* Ensure images/videos fit within their container */
+  height: auto;
+  display: block;
+  margin: 0 auto 10px; /* Center and add space below */
+  border-radius: 4px;
+}
+
+.floating-item p {
+  margin: 0;
+  padding: 0;
+  font-size: 1em; /* Relative to parent floating-item font-size */
+  white-space: normal; /* Allow text to wrap within text boxes */
+  color: #f3f2f0;
+}
+
+.floating-item .caption {
+  font-size: 0.8em;
+  font-style: italic;
+  opacity: 0.8;
+  margin-top: 5px;
 }
 
 
-/* El texto del floating-item se hace visible cuando el floating-item tiene la clase 'is-hovered' */
-.floating-item.is-hovered .image-info {
-  opacity: 1; /* Visible al hacer hover */
-  transform: translateX(-50%) translateY(0); /* Vuelve a la posición original manteniendo el centrado */
-}
-
-/* Botón de contexto mejorado */
+/* Toggle Info Button */
 #toggle-info {
   position: fixed;
   bottom: 20px;
-  right: 20px;
-  background: rgba(243, 242, 239, 0.9);
-  color: #333;
-  padding: 8px 16px;
-  border: 1px solid rgba(0,0,0,0.1);
+  left: 20px;
+  z-index: 100;
+  background-color: rgba(243, 242, 239, 0.1);
+  border: 1px solid rgba(243, 242, 239, 0.2);
+  color: #f3f2f0;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-family: 'Rebond Grotesque', Arial, sans-serif;
+  font-size: 1em;
   cursor: pointer;
-  z-index: 200;
-  font-family: 'Rebond Grotesque';
-  font-size: 12px;
-  border-radius: 3px;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  white-space: nowrap;
 }
 
 #toggle-info:hover {
-  background: rgba(243, 242, 239, 1);
-  border-color: rgba(0,0,0,0.2);
-  transform: translateY(-1px);
+  background-color: rgba(243, 242, 239, 0.2);
+  border-color: rgba(243, 242, 239, 0.4);
 }
 
-/* Popup overlay */
+
+/* Popup Overlay (Context Panel) */
 .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #201E18;
-  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .popup-overlay.show {
   opacity: 1;
+  visibility: visible;
 }
 
-/* Panel del popup */
 .popup-panel {
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  font-family: 'Rebond Grotesque';
+  background-color: #2a2620;
+  color: #f3f2f0;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   transform: translateY(20px);
-  transition: transform 0.3s ease;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  font-family: Arial, sans-serif; /* Use a readable font for long text */
 }
 
 .popup-overlay.show .popup-panel {
   transform: translateY(0);
+  opacity: 1;
 }
 
-/* Header del popup */
 .popup-header {
-  padding: 20px 20px 0 20px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 0;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(243, 242, 239, 0.1);
+  padding-bottom: 10px;
 }
 
 .popup-header h2 {
-  margin: 0 0 20px 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: #333;
+  margin: 0;
+  font-size: 1.8em;
+  color: #f3f2f0;
+  font-family: 'Rebond Grotesque', Arial, sans-serif;
 }
 
-/* Botón cerrar */
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  color: #f3f2f0;
+  font-size: 2.5em;
   cursor: pointer;
-  color: #666;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 3px;
-  transition: all 0.2s ease;
+  line-height: 1;
+  padding: 0 5px;
+  transition: color 0.2s ease;
 }
 
 .close-btn:hover {
-  background: #f0f0f0;
-  color: #333;
-}
-
-/* Contenido con scroll */
-.popup-content {
-  padding: 0 20px 20px 20px;
-  overflow-y: auto;
-  max-height: calc(80vh - 100px);
+  color: #ff9800; /* Orange for hover */
 }
 
 .popup-content p {
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 1em;
   margin-bottom: 16px;
-  color: #444;
+  color: #ccc;
 }
 
 .popup-content p:last-child {
@@ -252,118 +205,61 @@ body {
 
 /* Estilos para el título del zine en el lateral izquierdo */
 #zine-title-overlay {
-      position: fixed;
+    position: fixed; /* Keep it fixed relative to the viewport */
     top: 0;
     left: 0;
-    /* width: 100vh; */
-    /* height: 100vw; */
-    /* transform-origin: 0 0; */
-    /* transform: rotate(90deg) translateX(0) translateY(-100%); */
-    /* display: flex
-; */
+    height: 100%; /* Take full height */
+    display: flex;
     flex-direction: column;
     justify-content: center;
-    /* align-items: flex-start; */
-    z-index: 0;
-    pointer-events: none;
+    align-items: flex-start;
+    z-index: 50; /* Ensure it's above items but below popups */
+    pointer-events: none; /* Allows clicks to pass through */
     color: #f3f2f0;
-    font-family: 'Rebond Grotesque';
+    font-family: 'Rebond Grotesque', Arial, sans-serif;
     white-space: nowrap;
     padding-left: 20px;
 }
 
 .zine-title {
-  font-size: 10vw; /* Ajusta este valor para controlar el tamaño principal del título */
+  font-size: 10vw; /* Responsive font size based on viewport width */
   margin: 0;
   padding: 0;
   font-weight: bold;
 }
 
 .zine-date {
-  font-size: 2vw; /* Más pequeño que el título */
-  margin-top: 10px; /* Espacio entre título y fecha */
+  font-size: 2vw; /* Smaller responsive font size */
+  margin-top: 10px;
   padding: 0;
   font-weight: normal;
 }
 
-/* Ajustes para pantallas más pequeñas si es necesario */
+/* Adjustments for smaller screens (example media query) */
 @media (max-width: 768px) {
-  #zine-title-overlay {
-    /* Ajusta el padding y el tamaño de la fuente para pantallas pequeñas */
-    padding-left: 15px;
+  .floating-item {
+    padding: 2vw;
+    font-size: 3vw;
   }
   .zine-title {
-    font-size: 15vw; /* Más grande en móviles para mantener la presencia */
+    font-size: 12vw; /* Slightly larger on smaller screens */
   }
   .zine-date {
-    font-size: 3.5vw;
+    font-size: 3vw;
   }
-}
-
-/* Asegura que el overlay global tenga mayor z-index que el título cuando está activo */
-#global-overlay {
-    z-index: 9; /* Ya estaba, pero lo reafirmo para contexto */
-}
-
-/* Add to your existing style.css */
-
-#loading-screen, #access-denied-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #201E18; /* Dark background similar to your theme */
-  color: #f3f2f0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Rebond Grotesque', Arial, sans-serif;
-  text-align: center;
-  z-index: 99999; /* Above everything else */
-}
-
-#loading-screen h2, #access-denied-screen h2 {
-  font-size: 2em;
-  margin-bottom: 20px;
-}
-
-#loading-screen .spinner {
-  border: 4px solid rgba(243, 242, 239, 0.1);
-  border-top: 4px solid #f3f2f0;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-#access-denied-screen p {
-  font-size: 1.1em;
-  margin-bottom: 30px;
-}
-
-#access-denied-screen button {
-  background: #4CAF50; /* Green button */
-  color: white;
-  padding: 10px 25px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.3s ease;
-}
-
-#access-denied-screen button:hover {
-  background-color: #45a049;
-}
-
-/* Initially hide the main zine content */
-#zine-container {
-  display: none;
+  #toggle-info {
+    bottom: 10px;
+    left: 10px;
+    padding: 8px 15px;
+    font-size: 0.9em;
+  }
+  .popup-panel {
+    padding: 20px;
+  }
+  .popup-header h2 {
+    font-size: 1.5em;
+  }
+  .close-btn {
+    font-size: 2em;
+  }
 }
