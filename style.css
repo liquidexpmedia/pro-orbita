@@ -52,7 +52,7 @@ body {
 
 .floating-item {
   position: relative;
-  background-color: rgba(243, 242, 239, 0.08);
+  background-color: #201E18; /* Same as page background for seamless integration */
   border: 1px solid rgba(243, 242, 239, 0.15);
   border-radius: 8px;
   padding: 20px;
@@ -109,7 +109,7 @@ body {
 /* Text items - Quote style (smaller text) */
 .floating-item.text-item {
   width: clamp(280px, 30vw, 450px);
-  background-color: rgba(243, 242, 239, 0.12);
+  background-color: #201E18; /* Same as page background */
   border: 2px solid rgba(243, 242, 239, 0.2);
 }
 
@@ -122,19 +122,21 @@ body {
   font-style: italic;
 }
 
-/* Title text items - bigger, bolder style */
+/* Title text items - bigger, bolder style, always centered */
 .floating-item.title-item {
-  width: clamp(320px, 35vw, 500px);
-  background-color: rgba(243, 242, 239, 0.15);
+  width: clamp(350px, 40vw, 600px);
+  background-color: #201E18; /* Same as page background */
   border: 3px solid rgba(243, 242, 239, 0.3);
   border-radius: 12px;
+  margin-top: 0 !important; /* Override random positioning */
+  align-self: center; /* Center vertically in the flex container */
 }
 
 .floating-item.title-item p {
   margin: 0;
   color: #f3f2f0;
-  font-size: clamp(18px, 3vw, 24px);
-  line-height: 1.3;
+  font-size: clamp(22px, 4vw, 32px);
+  line-height: 1.2;
   text-align: center;
   font-weight: bold;
   font-style: normal;

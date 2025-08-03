@@ -20,18 +20,23 @@ const items = [
 function createAndPositionItems() {
   scene.innerHTML = ''; // Clear existing items
 
+  // Define margins from screen edges
+  const topMargin = 80; // px from top
+  const bottomMargin = 80; // px from bottom
+  const maxVerticalOffset = (window.innerHeight - topMargin - bottomMargin) / 4; // Safe range for random positioning
+
   items.forEach((item, index) => {
     const el = document.createElement('div');
     el.className = 'floating-item';
     el.setAttribute('data-index', index);
 
-    // Add organic vertical positioning
-    const verticalOffset = Math.random() * 200 - 100; // Random offset between -100px and +100px
-    el.style.marginTop = `${verticalOffset}px`;
-
     // Add specific class based on item type for better styling
     if (item.type === 'image') {
       el.classList.add('image-item');
+      // Add organic vertical positioning with margins
+      const verticalOffset = (Math.random() - 0.5) * maxVerticalOffset;
+      el.style.marginTop = `${topMargin + verticalOffset}px`;
+      
       const img = document.createElement('img');
       img.src = item.src;
       img.alt = item.text;
@@ -45,6 +50,10 @@ function createAndPositionItems() {
       
     } else if (item.type === 'video') {
       el.classList.add('video-item');
+      // Add organic vertical positioning with margins
+      const verticalOffset = (Math.random() - 0.5) * maxVerticalOffset;
+      el.style.marginTop = `${topMargin + verticalOffset}px`;
+      
       const video = document.createElement('video');
       video.src = item.src;
       video.controls = false; // No controls by default
@@ -61,12 +70,19 @@ function createAndPositionItems() {
       
     } else if (item.type === 'quote') {
       el.classList.add('text-item'); // Quote style - smaller, italic
+      // Add organic vertical positioning with margins
+      const verticalOffset = (Math.random() - 0.5) * maxVerticalOffset;
+      el.style.marginTop = `${topMargin + verticalOffset}px`;
+      
       const p = document.createElement('p');
       p.textContent = item.content;
       el.appendChild(p);
       
     } else if (item.type === 'title') {
-      el.classList.add('title-item'); // Title style - bigger, bold
+      el.classList.add('title-item'); // Title style - bigger, bold, centered
+      // Titles are always centered vertically (no random offset)
+      el.style.marginTop = `${window.innerHeight / 2 - 100}px`; // Centered with slight adjustment
+      
       const p = document.createElement('p');
       p.textContent = item.content;
       el.appendChild(p);
@@ -82,7 +98,7 @@ function createAndPositionItems() {
   spacer.style.height = '1px'; // Minimal height
   scene.appendChild(spacer);
 
-  console.log('✅ Gallery items created with organic positioning!');
+  console.log('✅ Gallery items created with safe margins and centered titles!');
 }
 
 // Ensure items are repositioned on resize
