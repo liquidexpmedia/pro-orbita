@@ -66,10 +66,10 @@ function createAndPositionItems() {
       
       const video = document.createElement('video');
       video.src = item.src;
-      video.controls = false; // No controls by default
+      video.controls = false; // No default controls - we'll add custom ones
       video.autoplay = true;
       video.loop = true;
-      video.muted = true; // Crucial for autoplay
+      video.muted = true; // Start muted for autoplay
       video.playsInline = true; // Crucial for autoplay on iOS
       
       // Handle video metadata to ensure proper scaling
@@ -82,6 +82,44 @@ function createAndPositionItems() {
       };
       
       el.appendChild(video);
+      
+      // Create custom video controls
+      const controlsContainer = document.createElement('div');
+      controlsContainer.className = 'video-controls';
+      
+      // Play/Pause button
+      const playPauseBtn = document.createElement('button');
+      playPauseBtn.className = 'video-control-btn';
+      playPauseBtn.textContent = 'Pause';
+      playPauseBtn.onclick = () => {
+        if (video.paused) {
+          video.play();
+          playPauseBtn.textContent = 'Pause';
+        } else {
+          video.pause();
+          playPauseBtn.textContent = 'Play';
+        }
+      };
+      
+      // Mute/Unmute button
+      const muteBtn = document.createElement('button');
+      muteBtn.className = 'video-control-btn active'; // Start as active since video starts muted
+      muteBtn.textContent = 'Unmute';
+      muteBtn.onclick = () => {
+        if (video.muted) {
+          video.muted = false;
+          muteBtn.textContent = 'Mute';
+          muteBtn.classList.remove('active');
+        } else {
+          video.muted = true;
+          muteBtn.textContent = 'Unmute';
+          muteBtn.classList.add('active');
+        }
+      };
+      
+      controlsContainer.appendChild(playPauseBtn);
+      controlsContainer.appendChild(muteBtn);
+      el.appendChild(controlsContainer);
       
       const caption = document.createElement('p');
       caption.textContent = item.text;
