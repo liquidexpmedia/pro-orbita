@@ -3,26 +3,36 @@
   src: url('fonts/Rebond Grotesque.otf'); /* Locate the .ttf file within your directory*/
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow-y: hidden; /* Block vertical scroll completely */
+  overflow-x: auto; /* Allow horizontal scroll */
+  background-color: #201E18;
+  font-family: "Rebond Grotesque", Arial, sans-serif;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
 
 body {
-  background-color: #201E18;
   color: #201E18; /* Default color for items, overridden by specific elements */
-  font-family: "Rebond Grotesque";
-  padding: 12px;
-  padding-top: 0px;
-  overflow-x: auto; /* Enable horizontal scrolling */
-  overflow-y: hidden; /* **BLOCK VERTICAL SCROLL** */
+  padding: 0;
   white-space: nowrap; /* Prevent inline elements from wrapping */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   position: relative; /* For absolute positioning of children */
-  height: 100vh; /* Ensure body takes full viewport height */
-  margin: 0;
 }
 
 #scene {
-  position: relative; /* Change from absolute to relative to contain floating items within it */
-  height: 100%; /* Take full height of the body */
-  /* Width will be set by JavaScript to enable horizontal scroll */
+  position: relative;
+  height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 30px;
 }
 
 /* Estilos del overlay global - más sutil */
@@ -36,27 +46,28 @@ body {
     opacity: 0; /* Oculto por defecto */
     transition: opacity 0.3s ease-in-out;
     z-index: -1; /* Asegura que esté detrás de los elementos flotantes por defecto */
-    pointer-events: none; /* Permite clickar elementos detrás cuando está oculto */
+    pointer-events: none; /* Permite clickear elementos detrás cuando está oculto */
 }
 
-
 .floating-item {
-  position: absolute;
-  background-color: rgba(243, 242, 239, 0.08); /* Slightly visible background */
+  position: relative;
+  background-color: rgba(243, 242, 239, 0.08);
   border: 1px solid rgba(243, 242, 239, 0.15);
   border-radius: 8px;
-  padding: 1.5vw; /* Responsive padding */
+  padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  color: #f3f2f0; /* Text color for items */
-  font-size: 1.8vw; /* Responsive font size */
+  color: #f3f2f0;
+  font-size: clamp(14px, 2.5vw, 18px);
   line-height: 1.4;
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  box-sizing: border-box; /* Include padding and border in width/height */
-  transition: transform 0.3s ease, left 0.3s ease, top 0.3s ease; /* Keep transition for smooth placement/rotation */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex-shrink: 0;
+  max-height: calc(100vh - 40px);
+  overflow: hidden;
 }
 
 /* Ensure no zoom effect on hover */
@@ -65,14 +76,77 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
+/* Image items - gallery wall style */
+.floating-item.image-item {
+  width: clamp(250px, 25vw, 400px);
+  background-color: #f3f2f0;
+  border: 8px solid #f3f2f0;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  padding: 0;
+}
+
+.floating-item.image-item img {
+  width: 100%;
+  height: auto;
+  max-height: calc(100vh - 120px);
+  object-fit: contain;
+  display: block;
+  margin: 0;
+}
+
+.floating-item.image-item .caption {
+  background-color: #f3f2f0;
+  color: #201E18;
+  padding: 15px;
+  margin: 0;
+  font-size: clamp(12px, 1.8vw, 14px);
+  font-style: italic;
+  text-align: left;
+}
+
+/* Text items */
+.floating-item.text-item {
+  width: clamp(280px, 30vw, 450px);
+  background-color: rgba(243, 242, 239, 0.12);
+  border: 2px solid rgba(243, 242, 239, 0.2);
+}
+
+.floating-item.text-item p {
+  margin: 0;
+  color: #f3f2f0;
+  font-size: clamp(14px, 2.2vw, 16px);
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* Video items */
+.floating-item.video-item {
+  width: clamp(300px, 35vw, 500px);
+}
+
+.floating-item.video-item video {
+  width: 100%;
+  height: auto;
+  max-height: calc(100vh - 180px);
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.floating-item.video-item .caption {
+  font-size: clamp(12px, 1.8vw, 14px);
+  font-style: italic;
+  opacity: 0.8;
+  margin: 0;
+  color: #f3f2f0;
+}
+
 .floating-item img, .floating-item video {
   max-width: 100%; /* Ensure images/videos fit within their container */
   height: auto; /* **Crucial for responsive height** */
   display: block;
   margin: 0 auto 10px; /* Center and add space below */
   border-radius: 4px;
-  /* Ensure no direct rotation applied by CSS to images here */
-  /* transform: none; (handled by JS for specific item types) */
+  /* No rotation applied to images for gallery wall effect */
 }
 
 .floating-item p {
@@ -90,7 +164,6 @@ body {
   margin-top: 5px;
 }
 
-
 /* Toggle Info Button */
 #toggle-info {
   position: fixed;
@@ -100,10 +173,10 @@ body {
   background-color: rgba(243, 242, 239, 0.1);
   border: 1px solid rgba(243, 242, 239, 0.2);
   color: #f3f2f0;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: 50px;
   font-family: 'Rebond Grotesque', Arial, sans-serif;
-  font-size: 1em;
+  font-size: clamp(14px, 2vw, 16px);
   cursor: pointer;
   transition: background-color 0.3s ease, border-color 0.3s ease;
   white-space: nowrap;
@@ -113,7 +186,6 @@ body {
   background-color: rgba(243, 242, 239, 0.2);
   border-color: rgba(243, 242, 239, 0.4);
 }
-
 
 /* Popup Overlay (Context Panel) */
 .popup-overlay {
@@ -192,10 +264,20 @@ body {
   font-size: 1em;
   margin-bottom: 16px;
   color: #ccc;
+  line-height: 1.6;
 }
 
 .popup-content p:last-child {
   margin-bottom: 0;
+}
+
+.popup-content a {
+  color: #ff9800;
+  text-decoration: none;
+}
+
+.popup-content a:hover {
+  text-decoration: underline;
 }
 
 .hidden {
@@ -205,59 +287,65 @@ body {
 /* Estilos para el título del zine en el lateral izquierdo */
 #zine-title-overlay {
     position: fixed; /* Keep it fixed relative to the viewport */
-    top: 0;
-    left: 0;
-    height: 100%; /* Take full height */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
     z-index: 50; /* Ensure it's above items but below popups */
     pointer-events: none; /* Allows clicks to pass through */
     color: #f3f2f0;
     font-family: 'Rebond Grotesque', Arial, sans-serif;
     white-space: nowrap;
-    padding-left: 20px;
 }
 
 .zine-title {
-  font-size: 10vw; /* Responsive font size based on viewport width */
+  font-size: clamp(40px, 8vw, 120px); /* Responsive font size based on viewport width */
   margin: 0;
   padding: 0;
   font-weight: bold;
+  line-height: 0.9;
 }
 
 .zine-date {
-  font-size: 2vw; /* Smaller responsive font size */
+  font-size: clamp(16px, 2.5vw, 24px); /* Smaller responsive font size */
   margin-top: 10px;
   padding: 0;
   font-weight: normal;
 }
 
-/* Adjustments for smaller screens (example media query) */
+/* Mobile adjustments */
 @media (max-width: 768px) {
-  .floating-item {
-    padding: 2vw;
-    font-size: 3vw;
+  #scene {
+    padding: 15px;
+    gap: 20px;
   }
-  .zine-title {
-    font-size: 12vw; /* Slightly larger on smaller screens */
+
+  .floating-item.image-item {
+    width: clamp(200px, 40vw, 300px);
   }
-  .zine-date {
-    font-size: 3vw;
+
+  .floating-item.text-item {
+    width: clamp(250px, 45vw, 350px);
   }
+
+  .floating-item.video-item {
+    width: clamp(250px, 50vw, 400px);
+  }
+
   #toggle-info {
-    bottom: 10px;
-    left: 10px;
-    padding: 8px 15px;
-    font-size: 0.9em;
+    bottom: 15px;
+    left: 15px;
+    padding: 10px 20px;
   }
+
   .popup-panel {
     padding: 20px;
+    margin: 20px;
   }
+
   .popup-header h2 {
     font-size: 1.5em;
   }
+
   .close-btn {
     font-size: 2em;
   }
