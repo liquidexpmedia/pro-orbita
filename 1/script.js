@@ -41,6 +41,16 @@ function createAndPositionItems() {
       img.src = item.src;
       img.alt = item.text;
       img.loading = 'lazy'; // Improve performance
+      
+      // Handle image load to ensure proper scaling
+      img.onload = function() {
+        // Additional check for very tall images
+        if (this.naturalHeight > this.naturalWidth * 1.5) {
+          // For very vertical images, ensure they fit properly
+          this.style.maxHeight = `calc(100vh - 300px)`;
+        }
+      };
+      
       el.appendChild(img);
       
       const caption = document.createElement('p');
@@ -61,6 +71,16 @@ function createAndPositionItems() {
       video.loop = true;
       video.muted = true; // Crucial for autoplay
       video.playsInline = true; // Crucial for autoplay on iOS
+      
+      // Handle video metadata to ensure proper scaling
+      video.onloadedmetadata = function() {
+        // Additional check for very tall videos
+        if (this.videoHeight > this.videoWidth * 1.5) {
+          // For very vertical videos, ensure they fit properly
+          this.style.maxHeight = `calc(100vh - 350px)`;
+        }
+      };
+      
       el.appendChild(video);
       
       const caption = document.createElement('p');
@@ -98,7 +118,7 @@ function createAndPositionItems() {
   spacer.style.height = '1px'; // Minimal height
   scene.appendChild(spacer);
 
-  console.log('✅ Gallery items created with safe margins and centered titles!');
+  console.log('✅ Gallery items created with responsive vertical scaling!');
 }
 
 // Ensure items are repositioned on resize

@@ -67,7 +67,7 @@ body {
   align-items: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   flex-shrink: 0;
-  max-height: calc(100vh - 40px);
+  max-height: calc(100vh - 100px); /* Ensure entire item fits within screen with margins */
   overflow: hidden;
   z-index: 100; /* Ensure items are in front */
 }
@@ -90,8 +90,9 @@ body {
 .floating-item.image-item img {
   width: 100%;
   height: auto;
-  max-height: calc(100vh - 120px);
-  object-fit: contain;
+  max-height: calc(100vh - 200px); /* More conservative height to account for captions and margins */
+  max-width: 100%;
+  object-fit: contain; /* Maintain aspect ratio */
   display: block;
   margin: 0;
 }
@@ -150,7 +151,9 @@ body {
 .floating-item.video-item video {
   width: 100%;
   height: auto;
-  max-height: calc(100vh - 180px);
+  max-height: calc(100vh - 250px); /* More conservative height to account for captions and margins */
+  max-width: 100%;
+  object-fit: contain; /* Maintain aspect ratio */
   border-radius: 4px;
   margin-bottom: 10px;
 }
