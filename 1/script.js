@@ -7,14 +7,17 @@ const globalOverlay = document.getElementById('global-overlay');
 
 // Define items for the zine - NOW INCLUDING THE TITLE AS FIRST ITEM
 const items = [
-  { type: 'zine-title', title: 'Plotter\nSpectrum #1', date: 'July 2025' }, // NEW: Zine title as first item
-  { type: 'image', src: './assets/Issue1_g.png', text: '"Good Things Come To Those Who Wait" \n- Yinka Illori at Picadilly Circus London, 2024' },
-  { type: 'image', src: './assets/Issue1_j.png', text: '"Infinite Accumulation" - Yayoi Kusama at Liverpool Street Station London, 2024' },
-  { type: 'quote', content: '"Collaborating with diverse thinkers to work toward a greater understanding of the dynamics of race, gender, and class is essential for those of us who want to move beyond one-dimensional ways of thinking, being, and living." - Teaching Critical Thinking: Practical Wisdom bell hooks, 2009' },
-  { type: 'image', src: './assets/Issue1_c.png', text: '"The Encyclopedia of \nInvisibility and Six Thousand Years" \n- Tavares Strachan' },
-  { type: 'title', content: 'Art & Technology: Bridging Worlds' },
+  { type: 'zine-title', title: 'Plotter\nSpectrum\n#1', date: 'June 2025' }, // NEW: Zine title as first item
+  { type: 'title', content: 'Analogue first' },
+  { type: 'quote', content: '"This cardboard plotter is a very useful xample for understanding how a plotter works and identifying all the components that make it work: the mechanism, the interface and the program (how can we draw using a code?).' },
+  { type: 'title', content: 'Random VS Control' },
+  { type: 'quote', content: '"trial, be a plotter" is an interactive installation in which the user`s head and mouth act as the interface for controlling a plotter. The result? Abstract, unpredictable drawings. \n What happens when the body becomes part of the drawing system? Would you choose precision or surprise? Which interface would give you more control or more randomness?' },
+  { type: 'image', src: './assets/trialBeAPlotter.jpg', text: '"Trial, be a plotter" \n- Michel Winterberg, 2015' },
+  { type: 'title', content: 'Past & Present' },
+  { type: 'image', src: './assets/BookTracingTheLine.jpg', text: '' },
+  { type: 'quote', content: '"Tracing the Line" (2023) is a good source of inspiration and a way to discover contemporary artists working in this field. \n At the beginning of the book, you will find information on the origin of plotting, different tyes of plotting machines, and creators who already experimented with pen plotters in the past (even with AI systems, as Harold Cohen`s "AARON" did in the 1960s).'  },
   { type: 'video', src: './assets/IMG_1158.webm', text: 'Video de muestra del proyecto de arte interactivo' },
-  { type: 'quote', content: '"For me, one of the things about artistic practice is that it\'s not about providing some solution, but instead provoking curiosity about some things that you should find on your own and not be led to." - Tavares Strachan The Brooklyn Rail, 2022' }
+  
 ];
 
 // Create gallery items with organic positioning
