@@ -3,26 +3,37 @@
   src: url('fonts/Rebond Grotesque.otf'); /* Locate the .ttf file within your directory*/
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow-y: hidden; /* Block vertical scroll completely */
+  overflow-x: auto; /* Allow horizontal scroll */
+  background-color: #201E18;
+  font-family: "Rebond Grotesque", Arial, sans-serif;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
 
 body {
-  background-color: #201E18;
   color: #201E18; /* Default color for items, overridden by specific elements */
-  font-family: "Rebond Grotesque";
-  padding: 12px;
-  padding-top: 0px;
-  overflow-x: auto; /* Enable horizontal scrolling */
-  overflow-y: hidden; /* **BLOCK VERTICAL SCROLL** */
+  padding: 0;
   white-space: nowrap; /* Prevent inline elements from wrapping */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   position: relative; /* For absolute positioning of children */
-  height: 100vh; /* Ensure body takes full viewport height */
-  margin: 0;
 }
 
 #scene {
-  position: relative; /* Change from absolute to relative to contain floating items within it */
-  height: 100%; /* Take full height of the body */
-  /* Width will be set by JavaScript to enable horizontal scroll */
+  position: relative;
+  height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 30px;
+  z-index: 100; /* Bring gallery items to front */
 }
 
 /* Estilos del overlay global - más sutil */
@@ -36,33 +47,214 @@ body {
     opacity: 0; /* Oculto por defecto */
     transition: opacity 0.3s ease-in-out;
     z-index: -1; /* Asegura que esté detrás de los elementos flotantes por defecto */
-    pointer-events: none; /* Permite clickar elementos detrás cuando está oculto */
+    pointer-events: none; /* Permite clickear elementos detrás cuando está oculto */
 }
 
-
 .floating-item {
-  position: absolute;
-  background-color: rgba(243, 242, 239, 0.08); /* Slightly visible background */
-  border: 1px solid rgba(243, 242, 239, 0.15);
-  border-radius: 8px;
-  padding: 1.5vw; /* Responsive padding */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  color: #f3f2f0; /* Text color for items */
-  font-size: 1.8vw; /* Responsive font size */
+  position: relative;
+  background-color: #201E18; /* Same as page background for seamless integration */
+  border: none; /* Remove default border */
+  border-radius: 0; /* Remove round corners */
+  padding: 20px;
+  box-shadow: none; /* Remove default shadow */
+  color: #f3f2f0;
+  font-size: clamp(14px, 2.5vw, 18px);
   line-height: 1.4;
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  box-sizing: border-box; /* Include padding and border in width/height */
-  transition: transform 0.3s ease, left 0.3s ease, top 0.3s ease; /* Keep transition for smooth placement/rotation */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  flex-shrink: 0;
+  max-height: calc(100vh - 100px); /* Ensure entire item fits within screen with margins */
+  overflow: hidden;
+  z-index: 100; /* Ensure items are in front */
+  opacity: 0; /* Start invisible for fade-in animation */
+  animation: fadeInUp 0.8s ease forwards;
 }
 
-/* **DELETED HOVER EFFECT** */
+/* Ensure no zoom effect on hover */
 .floating-item:hover {
-  /* No styles here to remove any highlight effect */
-  /* This block is empty to ensure no hover changes happen */
+  border-color: transparent; /* No border color change */
+  box-shadow: none; /* No shadow on hover */
+}
+
+/* Image items - gallery wall style */
+.floating-item.image-item {
+  width: clamp(250px, 25vw, 400px);
+  background-color: #201E18; /* Same as page background */
+  border: none; /* Remove white frame */
+  box-shadow: none; /* Remove shadow */
+  padding: 0;
+}
+
+.floating-item.image-item img {
+  width: 100%;
+  height: auto;
+  max-height: calc(100vh - 200px); /* More conservative height to account for captions and margins */
+  max-width: 100%;
+  object-fit: contain; /* Maintain aspect ratio */
+  display: block;
+  margin: 0;
+}
+
+.floating-item.image-item .caption {
+  background-color: #201E18; /* Same as page background */
+  color: #f3f2f0; /* White text instead of dark */
+  padding: 15px;
+  margin: 0;
+  font-size: clamp(12px, 1.8vw, 14px);
+  font-style: italic;
+  text-align: left;
+}
+
+/* Text items - Quote style (smaller text) */
+.floating-item.text-item {
+  width: clamp(280px, 30vw, 450px);
+  background-color: #201E18; /* Same as page background */
+  border: none; /* Remove frame */
+}
+
+.floating-item.text-item p {
+  margin: 0;
+  color: #f3f2f0;
+  font-size: clamp(14px, 2.2vw, 16px);
+  line-height: 1.5;
+  text-align: left;
+  font-style: italic;
+}
+
+/* Title text items - bigger, bolder style, always centered */
+.floating-item.title-item {
+  width: clamp(350px, 40vw, 600px);
+  background-color: #201E18; /* Same as page background */
+  border: none; /* Remove frame */
+  border-radius: 0; /* Remove round corners */
+  margin-top: 0 !important; /* Override random positioning */
+  align-self: center; /* Center vertically in the flex container */
+}
+
+.floating-item.title-item p {
+  margin: 0;
+  color: #f3f2f0;
+  font-size: clamp(22px, 4vw, 32px);
+  line-height: 1.2;
+  text-align: left;
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* NEW: Zine title item - special styling for the main title */
+.floating-item.zine-title-item {
+  width: clamp(350px, 60vw, 800px);
+  min-height: clamp(200px, 30vh, 400px); /* Ensure enough height */
+  border: none; /* Remove frame */
+  align-self: center; /* Center vertically in the flex container */
+  padding: clamp(20px, 5vw, 60px); /* Responsive padding */
+  transition: transform 0.5s ease, filter 0.3s ease; /* Smooth interactions */
+  display: contents;
+  flex-direction: column;
+  justify-content: center; /* Center content within the item */
+}
+
+
+
+.floating-item.zine-title-item .zine-title {
+  margin: 0;
+  color: #f3f2f0; /* Full opacity white */
+  font-size: clamp(32px, 12vw, 80px); /* Better scaling for mobile */
+  line-height: 0.85;
+  text-align: center;
+  font-weight: bold;
+  font-style: normal;
+  font-family: 'Rebond Grotesque', Arial, sans-serif;
+  white-space: pre-line; /* Allow line breaks in title */
+}
+
+.floating-item.zine-title-item .zine-date {
+  margin: clamp(10px, 3vw, 20px) 0 0 0;
+  color: #f3f2f0; /* Full opacity white */
+  font-size: clamp(14px, 3vw, 20px);
+  text-align: left;
+  font-weight: normal;
+  font-style: normal;
+  font-family: 'Rebond Grotesque', Arial, sans-serif;
+}
+
+/* Video items */
+.floating-item.video-item {
+  width: clamp(300px, 35vw, 500px);
+}
+
+.floating-item.video-item video {
+  width: 100%;
+  height: auto;
+  max-height: calc(100vh - 300px); /* More space for controls */
+  max-width: 100%;
+  object-fit: contain; /* Maintain aspect ratio */
+  border-radius: 0; /* Remove round corners */
+}
+
+/* Video controls styling - NOW ABOVE VIDEO */
+.video-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px; /* Above video instead of below */
+  justify-content: center;
+}
+
+.video-control-btn {
+  background-color: rgba(243, 242, 239, 0.1);
+  border: 1px solid rgba(243, 242, 239, 0.3);
+  color: #f3f2f0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-family: 'Rebond Grotesque', Arial, sans-serif;
+  font-size: clamp(12px, 1.5vw, 14px);
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px; /* Touch-friendly minimum size */
+  min-height: 36px;
+}
+
+.video-control-btn:hover {
+  background-color: rgba(243, 242, 239, 0.2);
+  transform: translateY(-1px);
+}
+
+.video-control-btn.active {
+  background-color: rgba(243, 242, 239, 0.3);
+}
+
+/* Video control icons using Unicode symbols */
+.video-control-btn.play-pause::before {
+  content: '⏸️'; /* Pause icon */
+  font-size: 16px;
+}
+
+.video-control-btn.play-pause.paused::before {
+  content: '▶️'; /* Play icon */
+}
+
+.video-control-btn.mute-btn::before {
+  content: '🔊'; /* Unmute icon */
+  font-size: 16px;
+}
+
+.video-control-btn.mute-btn.active::before {
+  content: '🔇'; /* Mute icon */
+}
+
+.floating-item.video-item .caption {
+  font-size: clamp(12px, 1.8vw, 14px);
+  font-style: italic;
+  opacity: 0.8;
+  margin: 0;
+  color: #f3f2f0;
 }
 
 .floating-item img, .floating-item video {
@@ -71,6 +263,7 @@ body {
   display: block;
   margin: 0 auto 10px; /* Center and add space below */
   border-radius: 4px;
+  /* No rotation applied to images for gallery wall effect */
 }
 
 .floating-item p {
@@ -88,7 +281,6 @@ body {
   margin-top: 5px;
 }
 
-
 /* Toggle Info Button */
 #toggle-info {
   position: fixed;
@@ -98,10 +290,10 @@ body {
   background-color: rgba(243, 242, 239, 0.1);
   border: 1px solid rgba(243, 242, 239, 0.2);
   color: #f3f2f0;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: 50px;
   font-family: 'Rebond Grotesque', Arial, sans-serif;
-  font-size: 1em;
+  font-size: clamp(14px, 2vw, 16px);
   cursor: pointer;
   transition: background-color 0.3s ease, border-color 0.3s ease;
   white-space: nowrap;
@@ -111,7 +303,6 @@ body {
   background-color: rgba(243, 242, 239, 0.2);
   border-color: rgba(243, 242, 239, 0.4);
 }
-
 
 /* Popup Overlay (Context Panel) */
 .popup-overlay {
@@ -190,81 +381,100 @@ body {
   font-size: 1em;
   margin-bottom: 16px;
   color: #ccc;
+  line-height: 1.6;
 }
 
 .popup-content p:last-child {
   margin-bottom: 0;
 }
 
+.popup-content a {
+  color: #ff9800;
+  text-decoration: none;
+}
+
+.popup-content a:hover {
+  text-decoration: underline;
+}
+
 .hidden {
   display: none;
 }
 
-/* Estilos para el título del zine en el lateral izquierdo */
-#zine-title-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    z-index: 50;
-    pointer-events: none;
-    color: #f3f2f0;
-    font-family: 'Rebond Grotesque', Arial, sans-serif;
-    white-space: nowrap;
-    padding-left: 20px;
-    
-    /* **NEW ROTATION** */
-    transform-origin: top left;
-    transform: rotate(90deg) translateX(0%) translateY(-100%);
-}
+/* REMOVED: Old zine title overlay styles - now integrated as gallery item */
 
-.zine-title {
-  font-size: 10vw;
-  margin: 0;
-  padding: 0;
-  font-weight: bold;
-}
-
-.zine-date {
-  font-size: 2vw;
-  margin-top: 10px;
-  padding: 0;
-  font-weight: normal;
-}
-
-/* Adjustments for smaller screens (example media query) */
+/* Mobile adjustments */
 @media (max-width: 768px) {
-  .floating-item {
-    padding: 2vw;
-    font-size: 3vw;
+  #scene {
+    padding: 15px;
+    gap: 20px;
   }
-  .zine-title {
-    font-size: 12vw;
+
+  .floating-item.image-item {
+    width: clamp(200px, 40vw, 300px);
   }
-  .zine-date {
-    font-size: 3vw;
+
+  .floating-item.text-item {
+    width: clamp(250px, 45vw, 350px);
   }
+
+  .floating-item.video-item {
+    width: clamp(250px, 50vw, 400px);
+  }
+
+  .floating-item.title-item {
+    width: clamp(280px, 50vw, 400px);
+  }
+
+  .floating-item.zine-title-item {
+    width: clamp(280px, 85vw, 400px);
+    min-height: clamp(180px, 25vh, 300px);
+    padding: clamp(15px, 4vw, 40px);
+  }
+
+  .floating-item.zine-title-item .zine-title {
+    font-size: clamp(28px, 15vw, 48px); /* Better mobile scaling */
+    line-height: 0.9;
+  }
+
+  .floating-item.zine-title-item .zine-date {
+    font-size: clamp(12px, 4vw, 16px);
+    margin-top: clamp(8px, 2vw, 15px);
+  }
+
   #toggle-info {
-    bottom: 10px;
-    left: 10px;
-    padding: 8px 15px;
-    font-size: 0.9em;
+    bottom: 15px;
+    left: 15px;
+    padding: 10px 20px;
   }
+
   .popup-panel {
     padding: 20px;
+    margin: 20px;
   }
+
   .popup-header h2 {
     font-size: 1.5em;
   }
+
   .close-btn {
     font-size: 2em;
   }
-  #zine-title-overlay {
-    transform: rotate(90deg) translateX(0) translateY(-100%);
-    transform-origin: bottom left;
+}
+
+/* NEW: Fade-in animation for gallery items */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* NEW: Smooth scroll behavior */
+#scene {
+  scroll-behavior: smooth;
 }
