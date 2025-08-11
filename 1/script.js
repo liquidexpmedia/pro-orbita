@@ -1,27 +1,58 @@
 // ==========================================
-// ÓRBITA #1 - ZINE VIVO (Gallery Wall Design - Horizontal Scroll)
+// ÓRBITA - ZINE VIVO (Gallery Wall Design - Horizontal Scroll)
+// Generic script that loads content from window.ZINE_CONFIG
 // ==========================================
 
 const scene = document.getElementById('scene');
 const globalOverlay = document.getElementById('global-overlay');
 
-// Define items for the zine - NOW INCLUDING THE TITLE AS FIRST ITEM
-const items = [
-  { type: 'zine-title', title: 'Plotter\nSpectrum\n#1', date: 'June 2025' }, // NEW: Zine title as first item
-  { type: 'title', content: 'Analogue first' },
-  { type: 'quote', content: '"This cardboard plotter is a very useful xample for understanding how a plotter works and identifying all the components that make it work: the mechanism, the interface and the program (how can we draw using a code?).' },
-  { type: 'title', content: 'Random VS Control' },
-  { type: 'quote', content: '"trial, be a plotter" is an interactive installation in which the user`s head and mouth act as the interface for controlling a plotter. The result? Abstract, unpredictable drawings. \n What happens when the body becomes part of the drawing system? Would you choose precision or surprise? Which interface would give you more control or more randomness?' },
-  { type: 'image', src: './assets/trialBeAPlotter.jpg', text: '"Trial, be a plotter" \n- Michel Winterberg, 2015' },
-  { type: 'title', content: 'Past & Present' },
-  { type: 'image', src: './assets/BookTracingTheLine.jpg', text: '' },
-  { type: 'quote', content: '"Tracing the Line" (2023) is a good source of inspiration and a way to discover contemporary artists working in this field. \n At the beginning of the book, you will find information on the origin of plotting, different tyes of plotting machines, and creators who already experimented with pen plotters in the past (even with AI systems, as Harold Cohen`s "AARON" did in the 1960s).'  },
-  { type: 'video', src: './assets/IMG_1158.webm', text: 'Video de muestra del proyecto de arte interactivo' },
-  
-];
+// Load items from configuration (defined in HTML file)
+let items = [];
+let zineConfig = {};
+
+// Function to load configuration
+function loadZineConfiguration() {
+  if (window.ZINE_CONFIG) {
+    zineConfig = window.ZINE_CONFIG;
+    items = zineConfig.items || [];
+    
+    // Update page title if specified
+    if (zineConfig.title) {
+      document.title = zineConfig.title;
+    }
+    
+    // Update any zine-specific settings
+    if (zineConfig.settings) {
+      // Apply any global settings here if needed in the future
+    }
+    
+    console.log(`📚 Loaded zine: "${zineConfig.title || 'Untitled'}" with ${items.length} items`);
+  } else {
+    console.error('❌ No ZINE_CONFIG found. Please define window.ZINE_CONFIG in your HTML file.');
+    // Fallback - show error message
+    showConfigurationError();
+  }
+}
+
+// Show error if no configuration is found
+function showConfigurationError() {
+  scene.innerHTML = `
+    <div class="floating-item error-item" style="margin-top: ${window.innerHeight / 2 - 100}px;">
+      <h2 style="color: #ff9800; margin-bottom: 20px;">Configuration Missing</h2>
+      <p style="color: #f3f2f0; text-align: center; max-width: 400px;">
+        Please define <code>window.ZINE_CONFIG</code> with your zine content in the HTML file.
+      </p>
+    </div>
+  `;
+}
 
 // Create gallery items with organic positioning
 function createAndPositionItems() {
+  if (items.length === 0) {
+    showConfigurationError();
+    return;
+  }
+
   scene.innerHTML = ''; // Clear existing items
 
   // Define margins from screen edges with better mobile support
@@ -31,7 +62,30 @@ function createAndPositionItems() {
   const centerY = window.innerHeight / 2; // Center point
   const maxVerticalOffset = isMobile ? 40 : (window.innerHeight - topMargin - bottomMargin) / 6; // Smaller range for better centering
 
-  items.forEach((item, index) => {
+  // Process items and group title+text combinations
+  const processedItems = [];
+  let i = 0;
+  
+  while (i < items.length) {
+    const currentItem = items[i];
+    
+    // Check if current item is a title and next item is text
+    if (currentItem.type === 'title' && i + 1 < items.length && items[i + 1].type === 'text') {
+      // Combine title and text into a single item
+      processedItems.push({
+        type: 'title-text-block',
+        title: currentItem.content,
+        text: items[i + 1].content
+      });
+      i += 2; // Skip both items since we combined them
+    } else {
+      // Keep item as is
+      processedItems.push(currentItem);
+      i += 1;
+    }
+  }
+
+  processedItems.forEach((item, index) => {
     const el = document.createElement('div');
     el.className = 'floating-item';
     el.setAttribute('data-index', index);
@@ -44,7 +98,8 @@ function createAndPositionItems() {
       // Handle zine title as a gallery item
       el.classList.add('zine-title-item');
       // Center the title vertically with no random offset
-      el.style.marginTop = `${centerY - (isMobile ? 120 : 150)}px`;
+      const titleY = centerY - (isMobile ? 120 : 150);
+      el.style.marginTop = `${titleY}px`;
       
       const titleEl = document.createElement('h1');
       titleEl.className = 'zine-title';
@@ -56,38 +111,74 @@ function createAndPositionItems() {
       dateEl.textContent = item.date;
       el.appendChild(dateEl);
       
+    } else if (item.type === 'title-text-block') {
+      // Combined title and text block
+      el.classList.add('title-text-block');
+      // Center vertically with small random offset for organic feel
+      const blockOffset = (Math.random() - 0.5) * (isMobile ? 40 : 60);
+      const blockY = centerY - 120 + blockOffset;
+      el.style.marginTop = `${blockY}px`;
+      
+      // Apply horizontal variation for organic layout
+      const horizontalVariation = (Math.random() - 0.5) * (isMobile ? 60 : 100);
+      el.style.marginLeft = `${horizontalVariation}px`;
+      
+      // Create title element
+      const titleEl = document.createElement('h2');
+      titleEl.className = 'block-title';
+      titleEl.textContent = item.title;
+      el.appendChild(titleEl);
+      
+      // Create text element
+      const textEl = document.createElement('p');
+      textEl.className = 'block-text';
+      textEl.textContent = item.text;
+      el.appendChild(textEl);
+      
     } else if (item.type === 'image') {
       el.classList.add('image-item');
-      // Center around middle with small random offset
-      const verticalOffset = (Math.random() - 0.5) * maxVerticalOffset;
-      el.style.marginTop = `${centerY - 150 + verticalOffset}px`;
+      // Better vertical positioning for images with captions
+      const imageMargin = isMobile ? 80 : 120; // Space for top/bottom margins
+      const minY = imageMargin;
+      const maxY = window.innerHeight - imageMargin;
+      const randomRange = (maxY - minY) * 0.3; // 30% of available space for randomness
+      const centerRange = (maxY + minY) / 2;
+      const verticalOffset = (Math.random() - 0.5) * randomRange;
+      el.style.marginTop = `${centerRange - 200 + verticalOffset}px`; // -200 to account for image height
       
       const img = document.createElement('img');
       img.src = item.src;
-      img.alt = item.text;
+      img.alt = item.text || item.caption || '';
       img.loading = 'lazy'; // Improve performance
       
       // Handle image load to ensure proper scaling
       img.onload = function() {
-        // Additional check for very tall images
-        if (this.naturalHeight > this.naturalWidth * 1.5) {
-          // For very vertical images, ensure they fit properly
-          this.style.maxHeight = `calc(100vh - 300px)`;
+        // Ensure images fit within the available space
+        const availableHeight = window.innerHeight - (imageMargin * 2) - 80; // 80px for caption space
+        if (this.naturalHeight > availableHeight) {
+          this.style.maxHeight = `${availableHeight}px`;
         }
       };
       
       el.appendChild(img);
       
-      const caption = document.createElement('p');
-      caption.textContent = item.text;
-      caption.className = 'caption';
-      el.appendChild(caption);
+      if (item.text || item.caption) {
+        const caption = document.createElement('p');
+        caption.textContent = item.text || item.caption;
+        caption.className = 'caption';
+        el.appendChild(caption);
+      }
       
     } else if (item.type === 'video') {
       el.classList.add('video-item');
-      // Center around middle with small random offset
-      const verticalOffset = (Math.random() - 0.5) * maxVerticalOffset;
-      el.style.marginTop = `${centerY - 180 + verticalOffset}px`;
+      // Better vertical positioning for videos with controls and captions
+      const videoMargin = isMobile ? 80 : 120; // Space for top/bottom margins
+      const minY = videoMargin;
+      const maxY = window.innerHeight - videoMargin;
+      const randomRange = (maxY - minY) * 0.3; // 30% of available space for randomness
+      const centerRange = (maxY + minY) / 2;
+      const verticalOffset = (Math.random() - 0.5) * randomRange;
+      el.style.marginTop = `${centerRange - 250 + verticalOffset}px`; // -250 to account for video height + controls
       
       // Create custom video controls FIRST (above video)
       const controlsContainer = document.createElement('div');
@@ -117,10 +208,10 @@ function createAndPositionItems() {
       
       // Handle video metadata to ensure proper scaling
       video.onloadedmetadata = function() {
-        // Additional check for very tall videos
-        if (this.videoHeight > this.videoWidth * 1.5) {
-          // For very vertical videos, ensure they fit properly
-          this.style.maxHeight = `calc(100vh - 350px)`;
+        // Ensure videos fit within the available space
+        const availableHeight = window.innerHeight - (videoMargin * 2) - 120; // 120px for controls + caption space
+        if (this.videoHeight > availableHeight) {
+          this.style.maxHeight = `${availableHeight}px`;
         }
       };
       
@@ -147,13 +238,15 @@ function createAndPositionItems() {
         }
       };
       
-      const caption = document.createElement('p');
-      caption.textContent = item.text;
-      caption.className = 'caption';
-      el.appendChild(caption);
+      if (item.text || item.caption) {
+        const caption = document.createElement('p');
+        caption.textContent = item.text || item.caption;
+        caption.className = 'caption';
+        el.appendChild(caption);
+      }
       
     } else if (item.type === 'quote') {
-      el.classList.add('text-item'); // Quote style - smaller, italic
+      el.classList.add('quote-item');
       // Center around middle with small random offset
       const verticalOffset = (Math.random() - 0.5) * maxVerticalOffset;
       el.style.marginTop = `${centerY - 100 + verticalOffset}px`;
@@ -162,10 +255,25 @@ function createAndPositionItems() {
       p.textContent = item.content;
       el.appendChild(p);
       
+    } else if (item.type === 'text') {
+      // Standalone text (not following a title)
+      el.classList.add('text-item');
+      const verticalOffset = (Math.random() - 0.5) * maxVerticalOffset;
+      el.style.marginTop = `${centerY - 100 + verticalOffset}px`;
+      
+      const p = document.createElement('p');
+      p.textContent = item.content;
+      el.appendChild(p);
+      
     } else if (item.type === 'title') {
-      el.classList.add('title-item'); // Title style - bigger, bold, centered
-      // Center vertically with no random offset
-      el.style.marginTop = `${centerY - 80}px`;
+      // Standalone title (not followed by text)
+      el.classList.add('title-item');
+      const titleOffset = (Math.random() - 0.5) * (isMobile ? 40 : 60);
+      const titleY = centerY - 80 + titleOffset;
+      el.style.marginTop = `${titleY}px`;
+      
+      const horizontalVariation = (Math.random() - 0.5) * (isMobile ? 60 : 100);
+      el.style.marginLeft = `${horizontalVariation}px`;
       
       const p = document.createElement('p');
       p.textContent = item.content;
@@ -182,10 +290,10 @@ function createAndPositionItems() {
   spacer.style.height = '1px'; // Minimal height
   scene.appendChild(spacer);
 
-  console.log('✅ Gallery items created with better vertical centering and video controls!');
+  console.log(`✅ Gallery items created: ${processedItems.length} items (${items.length} original) with title-text grouping!`);
 }
 
-// NEW: Add scroll progress indicator
+// Add scroll progress indicator
 function addScrollIndicator() {
   const indicator = document.createElement('div');
   indicator.id = 'scroll-indicator';
@@ -210,7 +318,7 @@ function addScrollIndicator() {
   });
 }
 
-// NEW: Add keyboard navigation
+// Add keyboard navigation
 function addKeyboardNavigation() {
   document.addEventListener('keydown', (e) => {
     const scrollAmount = 300;
@@ -228,7 +336,6 @@ function addKeyboardNavigation() {
   });
 }
 
-
 // Ensure items are repositioned on resize
 let resizeTimeout;
 window.addEventListener('resize', () => {
@@ -242,30 +349,7 @@ window.addEventListener('resize', () => {
 // POPUP FUNCTIONALITY (Context Panel)
 // ==========================================
 
-// Initializer for popup
-document.addEventListener('DOMContentLoaded', () => {
-  const loadingScreen = document.getElementById('loading-screen');
-  const zineContainer = document.getElementById('zine-container');
-  
-  // Simulate loading time then show content
-  setTimeout(() => {
-    if (loadingScreen) loadingScreen.style.display = 'none';
-    if (zineContainer) zineContainer.style.display = 'block';
-    
-    // Create gallery items after loading
-    createAndPositionItems();
-    
-    // Initialize popup functionality
-    initializePopup();
-    
-    // NEW: Add enhanced features
-    addScrollIndicator();
-    addKeyboardNavigation();
-    
-    console.log('🎨 Enhanced zine experience loaded!');
-  }, 1500);
-});
-
+// Initialize popup with configuration-based content
 function initializePopup() {
   const toggleInfoBtn = document.getElementById('toggle-info');
   const closePopupBtn = document.getElementById('close-popup');
@@ -275,7 +359,6 @@ function initializePopup() {
     toggleInfoBtn.onclick = () => {
       popupOverlay.classList.remove('hidden');
       setTimeout(() => popupOverlay.classList.add('show'), 10);
-      // Don't block scroll since we already have overflow-y: hidden
     };
   }
 
@@ -295,6 +378,47 @@ function initializePopup() {
       }
     };
   }
+
+  // Update popup content if specified in configuration
+  if (zineConfig.popupContent) {
+    const popupContentEl = document.querySelector('.popup-content');
+    if (popupContentEl && zineConfig.popupContent.html) {
+      popupContentEl.innerHTML = zineConfig.popupContent.html;
+    }
+    
+    // Update popup title if specified
+    const popupTitleEl = document.querySelector('.popup-header h2');
+    if (popupTitleEl && zineConfig.popupContent.title) {
+      popupTitleEl.textContent = zineConfig.popupContent.title;
+    }
+  }
 }
 
-console.log('🎨 Gallery Wall Zine script loaded - title now scrolls as first gallery item!');
+// Main initializer
+document.addEventListener('DOMContentLoaded', () => {
+  const loadingScreen = document.getElementById('loading-screen');
+  const zineContainer = document.getElementById('zine-container');
+  
+  // Load configuration first
+  loadZineConfiguration();
+  
+  // Simulate loading time then show content
+  setTimeout(() => {
+    if (loadingScreen) loadingScreen.style.display = 'none';
+    if (zineContainer) zineContainer.style.display = 'block';
+    
+    // Create gallery items after loading
+    createAndPositionItems();
+    
+    // Initialize popup functionality
+    initializePopup();
+    
+    // Add enhanced features
+    addScrollIndicator();
+    addKeyboardNavigation();
+    
+    console.log('🎨 Generic zine system loaded successfully!');
+  }, 1500);
+});
+
+console.log('📚 Generic Zine Script Loaded - Waiting for ZINE_CONFIG...');

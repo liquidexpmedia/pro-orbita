@@ -80,19 +80,21 @@ body {
   box-shadow: none; /* No shadow on hover */
 }
 
-/* Image items - gallery wall style */
+/* Image items - gallery wall style with better positioning */
 .floating-item.image-item {
   width: clamp(250px, 25vw, 400px);
   background-color: #201E18; /* Same as page background */
   border: none; /* Remove white frame */
   box-shadow: none; /* Remove shadow */
   padding: 0;
+  max-height: calc(100vh - 160px); /* Ensure entire item fits with top/bottom margins */
+  overflow: visible; /* Allow content to be visible */
 }
 
 .floating-item.image-item img {
   width: 100%;
   height: auto;
-  max-height: calc(100vh - 200px); /* More conservative height to account for captions and margins */
+  max-height: calc(100vh - 240px); /* Conservative height for image + caption space */
   max-width: 100%;
   object-fit: contain; /* Maintain aspect ratio */
   display: block;
@@ -109,30 +111,94 @@ body {
   text-align: left;
 }
 
-/* Text items - Quote style (smaller text) */
+/* Text items - Normal paragraph style */
 .floating-item.text-item {
-  width: clamp(280px, 30vw, 450px);
-  background-color: #201E18; /* Same as page background */
-  border: none; /* Remove frame */
+  width: clamp(320px, 32vw, 480px);
+  background-color: #201E18;
+  border: none;
+  padding: 25px;
 }
 
 .floating-item.text-item p {
+  margin: 0;
+  color: #f3f2f0;
+  font-size: clamp(15px, 2.3vw, 17px);
+  line-height: 1.6;
+  text-align: left;
+  font-style: normal;
+  font-weight: 400;
+}
+
+/* Quote items - Clean responsive style */
+.floating-item.quote-item {
+  width: clamp(280px, 32vw, 460px);
+  background-color: #201E18;
+  border: none;
+  padding: 25px;
+  border-left: 3px solid #ff9800; /* Simple orange accent line */
+}
+
+.floating-item.quote-item p {
   margin: 0;
   color: #f3f2f0;
   font-size: clamp(14px, 2.2vw, 16px);
   line-height: 1.5;
   text-align: left;
   font-style: italic;
+  font-weight: 300;
+  opacity: 0.9;
 }
 
-/* Title text items - bigger, bolder style, always centered */
+/* NEW: Zine title item - special styling for the main title */
+.floating-item.zine-title-item {
+  width: clamp(350px, 60vw, 800px);
+  min-height: clamp(200px, 30vh, 400px); /* Ensure enough height */
+  border: none; /* Remove frame */
+  align-self: center; /* Center vertically in the flex container */
+  padding: clamp(20px, 5vw, 60px); /* Responsive padding */
+  transition: transform 0.5s ease, filter 0.3s ease; /* Smooth interactions */
+  display: contents;
+  flex-direction: column;
+  justify-content: center; /* Center content within the item */
+}
+.floating-item.title-text-block {
+  width: clamp(350px, 40vw, 600px);
+  background-color: #201E18;
+  border: none;
+  padding: 25px;
+  max-height: calc(100vh - 160px);
+  overflow: visible;
+}
+
+.floating-item.title-text-block .block-title {
+  margin: 0 0 clamp(15px, 3vw, 25px) 0;
+  color: #f3f2f0;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.2;
+  text-align: left;
+  font-weight: bold;
+  font-style: normal;
+  font-family: 'Rebond Grotesque', Arial, sans-serif;
+}
+
+.floating-item.title-text-block .block-text {
+  margin: 0;
+  color: #f3f2f0;
+  font-size: clamp(15px, 2.3vw, 17px);
+  line-height: 1.6;
+  text-align: left;
+  font-style: normal;
+  font-weight: 400;
+  font-family: 'Rebond Grotesque', Arial, sans-serif;
+}
+
+/* Title text items - standalone titles (not followed by text) */
 .floating-item.title-item {
   width: clamp(350px, 40vw, 600px);
-  background-color: #201E18; /* Same as page background */
-  border: none; /* Remove frame */
-  border-radius: 0; /* Remove round corners */
-  margin-top: 0 !important; /* Override random positioning */
-  align-self: center; /* Center vertically in the flex container */
+  background-color: #201E18;
+  border: none;
+  border-radius: 0;
+  padding: 25px;
 }
 
 .floating-item.title-item p {
@@ -144,8 +210,6 @@ body {
   font-weight: bold;
   font-style: normal;
 }
-
-/* NEW: Zine title item - special styling for the main title */
 .floating-item.zine-title-item {
   width: clamp(350px, 60vw, 800px);
   min-height: clamp(200px, 30vh, 400px); /* Ensure enough height */
@@ -182,15 +246,17 @@ body {
   font-family: 'Rebond Grotesque', Arial, sans-serif;
 }
 
-/* Video items */
+/* Video items with better positioning */
 .floating-item.video-item {
   width: clamp(300px, 35vw, 500px);
+  max-height: calc(100vh - 160px); /* Ensure entire item fits with top/bottom margins */
+  overflow: visible; /* Allow content to be visible */
 }
 
 .floating-item.video-item video {
   width: 100%;
   height: auto;
-  max-height: calc(100vh - 300px); /* More space for controls */
+  max-height: calc(100vh - 320px); /* Space for controls, caption, and margins */
   max-width: 100%;
   object-fit: contain; /* Maintain aspect ratio */
   border-radius: 0; /* Remove round corners */
@@ -304,7 +370,7 @@ body {
   border-color: rgba(243, 242, 239, 0.4);
 }
 
-/* Popup Overlay (Context Panel) */
+/* Popup Overlay (Context Panel) - Vertical Scroll */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -319,6 +385,7 @@ body {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
+  padding: 20px; /* Add padding for mobile */
 }
 
 .popup-overlay.show {
@@ -329,16 +396,18 @@ body {
 .popup-panel {
   background-color: #2a2620;
   color: #f3f2f0;
-  padding: 30px;
   border-radius: 12px;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow-y: auto;
+  width: 100%;
+  max-width: min(600px, 90vw); /* Responsive max width */
+  max-height: min(80vh, 600px); /* Responsive max height */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   transform: translateY(20px);
   opacity: 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
-  font-family: Arial, sans-serif; /* Use a readable font for long text */
+  font-family: 'Rebond Grotesque', Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .popup-overlay.show .popup-panel {
@@ -350,35 +419,69 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  padding: clamp(20px, 4vw, 30px);
   border-bottom: 1px solid rgba(243, 242, 239, 0.1);
-  padding-bottom: 10px;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .popup-header h2 {
   margin: 0;
-  font-size: 1.8em;
+  font-size: clamp(1.2em, 4vw, 1.8em);
   color: #f3f2f0;
   font-family: 'Rebond Grotesque', Arial, sans-serif;
+  font-weight: bold;
 }
 
 .close-btn {
   background: none;
   border: none;
   color: #f3f2f0;
-  font-size: 2.5em;
+  font-size: clamp(1.8em, 5vw, 2.5em);
   cursor: pointer;
   line-height: 1;
-  padding: 0 5px;
+  padding: 0 clamp(5px, 1vw, 10px);
   transition: color 0.2s ease;
+  flex-shrink: 0;
+  min-width: 44px; /* Touch-friendly minimum */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-btn:hover {
   color: #ff9800; /* Orange for hover */
 }
 
+.popup-content {
+  padding: clamp(20px, 4vw, 30px);
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden;
+  flex: 1; /* Take remaining space */
+  line-height: 1.6;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.popup-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.popup-content::-webkit-scrollbar-track {
+  background: rgba(243, 242, 239, 0.1);
+  border-radius: 4px;
+}
+
+.popup-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 152, 0, 0.6);
+  border-radius: 4px;
+}
+
+.popup-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 152, 0, 0.8);
+}
+
 .popup-content p {
-  font-size: 1em;
+  font-size: clamp(14px, 3vw, 16px);
   margin-bottom: 16px;
   color: #ccc;
   line-height: 1.6;
@@ -391,10 +494,33 @@ body {
 .popup-content a {
   color: #ff9800;
   text-decoration: none;
+  word-break: break-word; /* Prevent long links from overflowing */
 }
 
 .popup-content a:hover {
   text-decoration: underline;
+}
+
+.popup-content h3 {
+  color: #f3f2f0;
+  font-size: clamp(16px, 3.5vw, 20px);
+  margin: clamp(20px, 4vw, 30px) 0 clamp(10px, 2vw, 15px) 0;
+  font-family: 'Rebond Grotesque', Arial, sans-serif;
+}
+
+.popup-content h3:first-child {
+  margin-top: 0;
+}
+
+.popup-content ul, .popup-content ol {
+  margin: 16px 0;
+  padding-left: clamp(20px, 4vw, 30px);
+}
+
+.popup-content li {
+  margin-bottom: 8px;
+  font-size: clamp(14px, 3vw, 16px);
+  color: #ccc;
 }
 
 .hidden {
@@ -415,15 +541,36 @@ body {
   }
 
   .floating-item.text-item {
-    width: clamp(250px, 45vw, 350px);
+    width: clamp(250px, 48vw, 360px);
+    padding: 20px;
+  }
+
+  .floating-item.quote-item {
+    width: clamp(250px, 48vw, 360px);
+    padding: 20px;
   }
 
   .floating-item.video-item {
     width: clamp(250px, 50vw, 400px);
   }
 
+  .floating-item.title-text-block {
+    width: clamp(300px, 50vw, 450px);
+    padding: 20px;
+  }
+
+  .floating-item.title-text-block .block-title {
+    font-size: clamp(24px, 6vw, 36px);
+    margin-bottom: clamp(12px, 3vw, 20px);
+  }
+
+  .floating-item.title-text-block .block-text {
+    font-size: clamp(14px, 3.5vw, 16px);
+  }
+
   .floating-item.title-item {
     width: clamp(280px, 50vw, 400px);
+    padding: 20px;
   }
 
   .floating-item.zine-title-item {
@@ -448,17 +595,49 @@ body {
     padding: 10px 20px;
   }
 
+  .popup-overlay {
+    padding: 15px; /* Increased padding on mobile */
+  }
+
   .popup-panel {
+    max-width: 95vw;
+    max-height: 85vh;
+    border-radius: 8px; /* Slightly smaller radius on mobile */
+  }
+
+  .popup-header {
     padding: 20px;
-    margin: 20px;
   }
 
   .popup-header h2 {
-    font-size: 1.5em;
+    font-size: clamp(1.1em, 5vw, 1.4em);
   }
 
   .close-btn {
-    font-size: 2em;
+    font-size: clamp(1.6em, 6vw, 2em);
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .popup-content {
+    padding: 20px;
+  }
+
+  .popup-content p {
+    font-size: clamp(13px, 4vw, 15px);
+  }
+
+  .popup-content h3 {
+    font-size: clamp(15px, 4.5vw, 18px);
+    margin: 20px 0 10px 0;
+  }
+
+  .popup-content ul, .popup-content ol {
+    padding-left: 20px;
+  }
+
+  .popup-content li {
+    font-size: clamp(13px, 4vw, 15px);
   }
 }
 
