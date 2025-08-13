@@ -27,6 +27,7 @@ function loadZineConfiguration() {
     }
     
     console.log(`📚 Loaded zine: "${zineConfig.title || 'Untitled'}" with ${items.length} items`);
+    console.log('Items:', items); // Debug log
   } else {
     console.error('⛔ No ZINE_CONFIG found. Please define window.ZINE_CONFIG in your HTML file.');
     // Fallback - show error message
@@ -54,52 +55,22 @@ function createAndPositionItems() {
   }
 
   scene.innerHTML = ''; // Clear existing items
+  console.log('Creating items:', items); // Debug log
 
-  // Define margins from screen edges with better mobile support
-  const isMobile = window.innerWidth <= 768;
-  const topMargin = isMobile ? 60 : 80; // px from top
-  const bottomMargin = isMobile ? 60 : 80; // px from bottom
-  const centerY = window.innerHeight / 2; // Center point
-  const maxVerticalOffset = isMobile ? 40 : (window.innerHeight - topMargin - bottomMargin) / 6; // Smaller range for better centering
-
-  // Process items and group title+text combinations
-  const processedItems = [];
-  let i = 0;
-  
-  while (i < items.length) {
-    const currentItem = items[i];
-    
-    // Check if current item is a title and next item is text
-    if (currentItem.type === 'title' && i + 1 < items.length && items[i + 1].type === 'text') {
-      // Combine title and text into a single item
-      processedItems.push({
-        type: 'title-text-block',
-        title: currentItem.content,
-        text: items[i + 1].content
-      });
-      i += 2; // Skip both items since we combined them
-    } else {
-      // Keep item as is
-      processedItems.push(currentItem);
-      i += 1;
-    }
-  }
-
-  processedItems.forEach((item, index) => {
+  items.forEach((item, index) => {
+    console.log('Processing item:', item); // Debug log
     const el = document.createElement('div');
-    el.className = 'floating-item';
-    el.setAttribute('data-index', index);
     
     // Add staggered animation delay for smoother appearance
-    el.style.animationDelay = `${index * 0.1}s`;
+    el.style.animationDelay = `${index * 0.2}s`;
 
-    // Add specific class based on item type for better styling
+    // Handle different item types
     if (item.type === 'zine-title') {
-      // Handle zine title with separate container class
-      el.className = 'zine-title-container'; // Use new container class instead of floating-item
+      // Handle zine title with separate container class - KEEP ORIGINAL STYLES
+      el.className = 'zine-title-container';
       el.setAttribute('data-index', index);
       el.style.animationDelay = `${index * 0.1}s`;
-      el.style.marginTop = '0px';
+      //el.style.marginTop = '0px';
       
       const titleEl = document.createElement('h1');
       titleEl.className = 'zine-title';
@@ -111,181 +82,140 @@ function createAndPositionItems() {
       dateEl.textContent = item.date;
       el.appendChild(dateEl);
       
-    } else if (item.type === 'title-text-block') {
-      // Combined title and text block
-      el.classList.add('title-text-block');
-      // Center vertically with small random offset for organic feel
-      const blockOffset = (Math.random() - 0.5) * (isMobile ? 40 : 60);
-      const blockY = centerY - 120 + blockOffset;
-      el.style.marginTop = `${blockY}px`;
+    } else if (item.type === 'section') {
+      // Handle sections with multiple items
+      el.className = 'section-container';
+      el.setAttribute('data-index', index);
       
-      // Apply horizontal variation for organic layout
-      const horizontalVariation = (Math.random() - 0.5) * (isMobile ? 60 : 100);
-      el.style.marginLeft = `${horizontalVariation}px`;
-      
-      // Create title element
-      const titleEl = document.createElement('h2');
-      titleEl.className = 'block-title';
-      titleEl.textContent = item.title;
-      el.appendChild(titleEl);
-      
-      // Create text element
-      const textEl = document.createElement('p');
-      textEl.className = 'block-text';
-      textEl.textContent = item.text;
-      el.appendChild(textEl);
-      
-    } else if (item.type === 'image') {
-      el.classList.add('image-item');
-      // Better vertical positioning for images with captions
-      const imageMargin = isMobile ? 80 : 120; // Space for top/bottom margins
-      const minY = imageMargin;
-      const maxY = window.innerHeight - imageMargin;
-      const randomRange = (maxY - minY) * 0.3; // 30% of available space for randomness
-      const centerRange = (maxY + minY) / 2;
-      const verticalOffset = (Math.random() - 0.5) * randomRange;
-      el.style.marginTop = `${centerRange - 200 + verticalOffset}px`; // -200 to account for image height
-      
-      const img = document.createElement('img');
-      img.src = item.src;
-      img.alt = item.text || item.caption || '';
-      img.loading = 'lazy'; // Improve performance
-      
-      // Handle image load to ensure proper scaling
-      img.onload = function() {
-        // Ensure images fit within the available space
-        const availableHeight = window.innerHeight - (imageMargin * 2) - 80; // 80px for caption space
-        if (this.naturalHeight > availableHeight) {
-          this.style.maxHeight = `${availableHeight}px`;
-        }
-      };
-      
-      el.appendChild(img);
-      
-      if (item.text || item.caption) {
-        const caption = document.createElement('p');
-        caption.textContent = item.text || item.caption;
-        caption.className = 'caption';
-        el.appendChild(caption);
+      // Add section title if provided
+      if (item.title) {
+        const sectionTitleEl = document.createElement('h2');
+        sectionTitleEl.className = 'section-title';
+        sectionTitleEl.textContent = item.title;
+        el.appendChild(sectionTitleEl);
       }
       
-    } else if (item.type === 'video') {
-      el.classList.add('video-item');
-      // Better vertical positioning for videos with controls and captions
-      const videoMargin = isMobile ? 80 : 120; // Space for top/bottom margins
-      const minY = videoMargin;
-      const maxY = window.innerHeight - videoMargin;
-      const randomRange = (maxY - minY) * 0.3; // 30% of available space for randomness
-      const centerRange = (maxY + minY) / 2;
-      const verticalOffset = (Math.random() - 0.5) * randomRange;
-      el.style.marginTop = `${centerRange - 250 + verticalOffset}px`; // -250 to account for video height + controls
+      // Create items wrapper for organic layout
+      const itemsWrapper = document.createElement('div');
+      itemsWrapper.className = 'section-items';
       
-      // Create custom video controls FIRST (above video)
-      const controlsContainer = document.createElement('div');
-      controlsContainer.className = 'video-controls';
-      
-      // Play/Pause button with icon
-      const playPauseBtn = document.createElement('button');
-      playPauseBtn.className = 'video-control-btn play-pause';
-      playPauseBtn.title = 'Play/Pause';
-      
-      // Mute/Unmute button with icon
-      const muteBtn = document.createElement('button');
-      muteBtn.className = 'video-control-btn mute-btn active'; // Start as active since video starts muted
-      muteBtn.title = 'Mute/Unmute';
-      
-      controlsContainer.appendChild(playPauseBtn);
-      controlsContainer.appendChild(muteBtn);
-      el.appendChild(controlsContainer);
-      
-      const video = document.createElement('video');
-      video.src = item.src;
-      video.controls = false; // No default controls - we have custom ones
-      video.autoplay = true;
-      video.loop = true;
-      video.muted = true; // Start muted for autoplay
-      video.playsInline = true; // Crucial for autoplay on iOS
-      
-      // Handle video metadata to ensure proper scaling
-      video.onloadedmetadata = function() {
-        // Ensure videos fit within the available space
-        const availableHeight = window.innerHeight - (videoMargin * 2) - 120; // 120px for controls + caption space
-        if (this.videoHeight > availableHeight) {
-          this.style.maxHeight = `${availableHeight}px`;
-        }
-      };
-      
-      el.appendChild(video);
-      
-      // Add event listeners for controls
-      playPauseBtn.onclick = () => {
-        if (video.paused) {
-          video.play();
-          playPauseBtn.classList.remove('paused');
-        } else {
-          video.pause();
-          playPauseBtn.classList.add('paused');
-        }
-      };
-      
-      muteBtn.onclick = () => {
-        if (video.muted) {
-          video.muted = false;
-          muteBtn.classList.remove('active');
-        } else {
-          video.muted = true;
-          muteBtn.classList.add('active');
-        }
-      };
-      
-      if (item.text || item.caption) {
-        const caption = document.createElement('p');
-        caption.textContent = item.text || item.caption;
-        caption.className = 'caption';
-        el.appendChild(caption);
+      // Process each item in the section
+      if (item.items && item.items.length > 0) {
+        item.items.forEach((subItem, subIndex) => {
+          console.log('Processing sub-item:', subItem); // Debug log
+          const itemEl = document.createElement('div');
+          itemEl.className = 'section-item';
+          itemEl.setAttribute('data-item', subIndex);
+          
+          if (subItem.type === 'image') {
+            itemEl.classList.add('item-image');
+            
+            const img = document.createElement('img');
+            img.src = subItem.src;
+            img.alt = subItem.caption || '';
+            img.loading = 'lazy';
+            itemEl.appendChild(img);
+            
+            if (subItem.caption) {
+              const caption = document.createElement('p');
+              caption.textContent = subItem.caption;
+              caption.className = 'item-caption';
+              itemEl.appendChild(caption);
+            }
+            
+          } else if (subItem.type === 'video') {
+            itemEl.classList.add('item-video');
+            
+            // Create custom video controls
+            const controlsContainer = document.createElement('div');
+            controlsContainer.className = 'video-controls';
+            
+            const playPauseBtn = document.createElement('button');
+            playPauseBtn.className = 'video-control-btn play-pause';
+            playPauseBtn.title = 'Play/Pause';
+            
+            const muteBtn = document.createElement('button');
+            muteBtn.className = 'video-control-btn mute-btn active';
+            muteBtn.title = 'Mute/Unmute';
+            
+            controlsContainer.appendChild(playPauseBtn);
+            controlsContainer.appendChild(muteBtn);
+            itemEl.appendChild(controlsContainer);
+            
+            const video = document.createElement('video');
+            video.src = subItem.src;
+            video.controls = false;
+            video.autoplay = true;
+            video.loop = true;
+            video.muted = true;
+            video.playsInline = true;
+            itemEl.appendChild(video);
+            
+            // Add event listeners for controls
+            playPauseBtn.onclick = () => {
+              if (video.paused) {
+                video.play();
+                playPauseBtn.classList.remove('paused');
+              } else {
+                video.pause();
+                playPauseBtn.classList.add('paused');
+              }
+            };
+            
+            muteBtn.onclick = () => {
+              if (video.muted) {
+                video.muted = false;
+                muteBtn.classList.remove('active');
+              } else {
+                video.muted = true;
+                muteBtn.classList.add('active');
+              }
+            };
+            
+            if (subItem.caption) {
+              const caption = document.createElement('p');
+              caption.textContent = subItem.caption;
+              caption.className = 'item-caption';
+              itemEl.appendChild(caption);
+            }
+            
+          } else if (subItem.type === 'quote') {
+            itemEl.classList.add('item-quote');
+            
+            const quoteText = document.createElement('p');
+            quoteText.className = 'quote-text';
+            quoteText.textContent = subItem.content;
+            itemEl.appendChild(quoteText);
+            
+            if (subItem.author) {
+              const authorCaption = document.createElement('p');
+              authorCaption.className = 'quote-author';
+              authorCaption.textContent = subItem.author;
+              itemEl.appendChild(authorCaption);
+            }
+            
+          } else if (subItem.type === 'text') {
+            itemEl.classList.add('item-text');
+            
+            const textEl = document.createElement('p');
+            textEl.textContent = subItem.content;
+            itemEl.appendChild(textEl);
+          }
+          
+          itemsWrapper.appendChild(itemEl);
+        });
       }
       
-    } else if (item.type === 'quote') {
-      el.classList.add('quote-item');
-      // Center around middle with small random offset
-      const verticalOffset = (Math.random() - 0.5) * maxVerticalOffset;
-      el.style.marginTop = `${centerY - 100 + verticalOffset}px`;
+      el.appendChild(itemsWrapper);
       
-      const quoteText = document.createElement('p');
-      quoteText.className = 'quote-text';
-      quoteText.textContent = item.content;
-      el.appendChild(quoteText);
-      
-      // Add author caption if provided
-      if (item.author) {
-        const authorCaption = document.createElement('p');
-        authorCaption.className = 'quote-author';
-        authorCaption.textContent = item.author;
-        el.appendChild(authorCaption);
-      }
-      
-    } else if (item.type === 'text') {
-      // Standalone text (not following a title)
-      el.classList.add('text-item');
-      const verticalOffset = (Math.random() - 0.5) * maxVerticalOffset;
-      el.style.marginTop = `${centerY - 100 + verticalOffset}px`;
+    } else {
+      // Fallback for unknown types - use original floating-item approach
+      console.log('Fallback for item:', item);
+      el.className = 'floating-item';
+      el.setAttribute('data-index', index);
       
       const p = document.createElement('p');
-      p.textContent = item.content;
-      el.appendChild(p);
-      
-    } else if (item.type === 'title') {
-      // Standalone title (not followed by text)
-      el.classList.add('title-item');
-      const titleOffset = (Math.random() - 0.5) * (isMobile ? 40 : 60);
-      const titleY = centerY - 80 + titleOffset;
-      el.style.marginTop = `${titleY}px`;
-      
-      const horizontalVariation = (Math.random() - 0.5) * (isMobile ? 60 : 100);
-      el.style.marginLeft = `${horizontalVariation}px`;
-      
-      const p = document.createElement('p');
-      p.textContent = item.content;
+      p.textContent = `Unknown item type: ${item.type}`;
       el.appendChild(p);
     }
 
@@ -296,10 +226,10 @@ function createAndPositionItems() {
   const spacer = document.createElement('div');
   spacer.style.width = '100px';
   spacer.style.flexShrink = '0';
-  spacer.style.height = '1px'; // Minimal height
+  spacer.style.height = '1px';
   scene.appendChild(spacer);
 
-  console.log(`✅ Gallery items created: ${processedItems.length} items (${items.length} original) with title-text grouping!`);
+  console.log(`✅ Gallery items created: ${items.length} items with sectioned content!`);
 }
 
 // Add scroll progress indicator
