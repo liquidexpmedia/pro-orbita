@@ -129,7 +129,7 @@ body {
   font-weight: 400;
 }
 
-/* Quote items - Clean responsive style */
+/* Quote items - Clean responsive style with author caption */
 .floating-item.quote-item {
   width: clamp(280px, 32vw, 460px);
   background-color: #201E18;
@@ -138,7 +138,35 @@ body {
   border-left: 3px solid #ff9800; /* Simple orange accent line */
 }
 
-.floating-item.quote-item p {
+.floating-item.quote-item .quote-text {
+  margin: 0 0 15px 0;
+  color: #f3f2f0;
+  font-size: clamp(14px, 2.2vw, 16px);
+  line-height: 1.5;
+  text-align: left;
+  font-style: italic;
+  font-weight: 300;
+  opacity: 0.9;
+}
+
+.floating-item.quote-item .quote-author {
+  margin: 0;
+  color: #ff9800; /* Orange color for author */
+  font-size: clamp(12px, 1.8vw, 14px);
+  line-height: 1.4;
+  text-align: right;
+  font-style: normal;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.floating-item.quote-item .quote-author::before {
+  content: "— ";
+  opacity: 0.6;
+}
+
+/* Fallback for old quote style (if no author provided) */
+.floating-item.quote-item p:not(.quote-text):not(.quote-author) {
   margin: 0;
   color: #f3f2f0;
   font-size: clamp(14px, 2.2vw, 16px);
@@ -151,15 +179,16 @@ body {
 
 /* NEW: Zine title item - special styling for the main title */
 .floating-item.zine-title-item {
-  width: clamp(350px, 60vw, 800px);
-  min-height: clamp(200px, 30vh, 400px); /* Ensure enough height */
-  border: none; /* Remove frame */
-  align-self: center; /* Center vertically in the flex container */
-  padding: clamp(20px, 5vw, 60px); /* Responsive padding */
-  transition: transform 0.5s ease, filter 0.3s ease; /* Smooth interactions */
-  display: contents;
+  width: auto; /* Change from clamp() to auto */
+  height: auto; /* Change from min-height to auto */
+  border: none;
+  align-self: center;
+  padding: clamp(20px, 5vw, 60px);
+  transition: transform 0.5s ease, filter 0.3s ease;
+  display: flex; /* Change from 'contents' to 'flex' */
   flex-direction: column;
-  justify-content: center; /* Center content within the item */
+  justify-content: center;
+  align-items: center; /* Add this for horizontal centering */
 }
 .floating-item.title-text-block {
   width: clamp(350px, 40vw, 600px);
@@ -190,6 +219,57 @@ body {
   font-style: normal;
   font-weight: 400;
   font-family: 'Rebond Grotesque', Arial, sans-serif;
+}
+
+/* NEW: Zine title container - completely separate from floating-item */
+.zine-title-container {
+  position: relative;
+  width: auto;
+  height: auto;
+  border: none;
+  align-self: center;
+  padding: clamp(20px, 5vw, 60px);
+  background-color: #201E18;
+  color: #f3f2f0;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  z-index: 100;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+.zine-title-container .zine-title {
+  transform: rotate(-90deg) !important;
+  transform-origin: center center !important;
+  margin: clamp(-400px, -20vw, -250px) !important;
+  color: #f3f2f0 !important;
+  font-size: clamp(32px, 12vw, 80px) !important;
+  text-align: center !important;
+  font-weight: bold !important;
+  font-style: normal !important;
+  font-family: 'Rebond Grotesque', Arial, sans-serif !important;
+  white-space: nowrap !important;
+  line-height: 0.9 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+.zine-title-container .zine-date {
+  transform: rotate(-90deg) !important;
+  transform-origin: center center !important;
+  margin: clamp(5px, 1vw, 10px) 0 0 0 !important;
+  color: #f3f2f0 !important;
+  font-size: clamp(14px, 3vw, 20px) !important;
+  text-align: center !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  font-family: 'Rebond Grotesque', Arial, sans-serif !important;
+  white-space: nowrap !important;
+  padding: 0 !important;
+  border: none !important;
 }
 
 /* Title text items - standalone titles (not followed by text) */
@@ -573,20 +653,31 @@ body {
     padding: 20px;
   }
 
-  .floating-item.zine-title-item {
-    width: clamp(280px, 85vw, 400px);
-    min-height: clamp(180px, 25vh, 300px);
+  .zine-title-container {
+    width: auto;
+    height: auto;
     padding: clamp(15px, 4vw, 40px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
-  .floating-item.zine-title-item .zine-title {
-    font-size: clamp(28px, 15vw, 48px); /* Better mobile scaling */
+  .zine-title-container .zine-title {
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    font-size: clamp(28px, 15vw, 48px);
     line-height: 0.9;
+    white-space: nowrap;
+    margin: -200px !important;
   }
 
-  .floating-item.zine-title-item .zine-date {
+  .zine-title-container .zine-date {
+    transform: rotate(-90deg);
+    transform-origin: center center;
     font-size: clamp(12px, 4vw, 16px);
-    margin-top: clamp(8px, 2vw, 15px);
+    margin-top: clamp(5px, 1vw, 10px);
+    white-space: nowrap;
   }
 
   #toggle-info {

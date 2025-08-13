@@ -28,7 +28,7 @@ function loadZineConfiguration() {
     
     console.log(`📚 Loaded zine: "${zineConfig.title || 'Untitled'}" with ${items.length} items`);
   } else {
-    console.error('❌ No ZINE_CONFIG found. Please define window.ZINE_CONFIG in your HTML file.');
+    console.error('⛔ No ZINE_CONFIG found. Please define window.ZINE_CONFIG in your HTML file.');
     // Fallback - show error message
     showConfigurationError();
   }
@@ -95,11 +95,11 @@ function createAndPositionItems() {
 
     // Add specific class based on item type for better styling
     if (item.type === 'zine-title') {
-      // Handle zine title as a gallery item
-      el.classList.add('zine-title-item');
-      // Center the title vertically with no random offset
-      const titleY = centerY - (isMobile ? 120 : 150);
-      el.style.marginTop = `${titleY}px`;
+      // Handle zine title with separate container class
+      el.className = 'zine-title-container'; // Use new container class instead of floating-item
+      el.setAttribute('data-index', index);
+      el.style.animationDelay = `${index * 0.1}s`;
+      el.style.marginTop = '0px';
       
       const titleEl = document.createElement('h1');
       titleEl.className = 'zine-title';
@@ -251,9 +251,18 @@ function createAndPositionItems() {
       const verticalOffset = (Math.random() - 0.5) * maxVerticalOffset;
       el.style.marginTop = `${centerY - 100 + verticalOffset}px`;
       
-      const p = document.createElement('p');
-      p.textContent = item.content;
-      el.appendChild(p);
+      const quoteText = document.createElement('p');
+      quoteText.className = 'quote-text';
+      quoteText.textContent = item.content;
+      el.appendChild(quoteText);
+      
+      // Add author caption if provided
+      if (item.author) {
+        const authorCaption = document.createElement('p');
+        authorCaption.className = 'quote-author';
+        authorCaption.textContent = item.author;
+        el.appendChild(authorCaption);
+      }
       
     } else if (item.type === 'text') {
       // Standalone text (not following a title)
