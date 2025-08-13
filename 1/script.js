@@ -232,6 +232,8 @@ function createAndPositionItems() {
   console.log(`✅ Gallery items created: ${items.length} items with sectioned content!`);
 }
 
+
+
 // Add scroll progress indicator
 function addScrollIndicator() {
   const indicator = document.createElement('div');
