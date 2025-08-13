@@ -56,7 +56,9 @@ body {
 ======================================== */
 .section-container {
   position: relative;
-  width: clamp(400px, 80vw, 1200px);
+  width: auto;
+  min-width: clamp(400px, 80vw, 1200px);
+  max-width: none;
   min-height: 60vh;
   background-color: #201E18;
   border: none;
@@ -81,14 +83,16 @@ body {
   line-height: 1.2 !important;
 }
 
-/* Section Items Layout - Your Working Flex-Wrap Version */
+/* Section Items Layout - Better Multi-Item Flex-Wrap */
 .section-items {
   display: flex;
   flex-wrap: wrap;
-  gap: clamp(25px, 4vw, 35px);
+  gap: clamp(20px, 3vw, 30px);
   align-items: flex-start;
-  width: 100%;
-  max-height: calc(100vh - 200px);
+  align-content: flex-start;
+  width: auto;
+  min-width: 100%;
+  max-height: calc(100vh - 140px);
   overflow: visible;
 }
 
@@ -100,9 +104,9 @@ body {
   flex-direction: column;
   align-items: flex-start;
   flex: 0 0 auto;
-  min-width: clamp(280px, 45vw, 400px);
-  max-width: clamp(300px, 50vw, 500px);
-  max-height: calc(100vh - 250px);
+  min-width: clamp(280px, 30vw, 350px);
+  max-width: clamp(320px, 35vw, 450px);
+  max-height: calc(100vh - 200px);
   overflow: visible;
 }
 
@@ -112,9 +116,10 @@ body {
 
 /* Text Items */
 .section-item.item-text {
-  flex: 1 1 clamp(280px, 45vw, 450px);
-  max-width: clamp(300px, 85vw, 700px);
-  margin: clamp(15px, 3vw, 25px) 0;
+  flex: 0 1 clamp(280px, 30vw, 380px);
+  max-width: clamp(320px, 60vw, 500px);
+  max-height: calc(100vh - 180px);
+  margin: clamp(10px, 2vw, 20px) 0;
 }
 
 .section-item.item-text p {
@@ -130,12 +135,14 @@ body {
 
 /* Quote Items */
 .section-item.item-quote {
-  flex: 1 1 clamp(280px, 40vw, 400px);
+  flex: 0 1 clamp(280px, 30vw, 350px);
   border-left: 3px solid #ff9800;
   padding-left: clamp(15px, 3vw, 25px);
-  margin: clamp(25px, 5vw, 40px) 0;
-  max-width: clamp(300px, 80vw, 650px);
+  margin: clamp(10px, 2vw, 20px) 0;
+  max-width: clamp(320px, 55vw, 450px);
+  max-height: calc(100vh - 180px);
   background-color: transparent;
+  white-space: pre-wrap;
 }
 
 .section-item.item-quote .quote-text {
@@ -166,8 +173,9 @@ body {
 
 /* Image Items */
 .section-item.item-image {
-  flex: 0 0 clamp(250px, 35vw, 350px);
-  max-width: clamp(280px, 40vw, 400px);
+  flex: 0 0 clamp(250px, 30vw, 320px);
+  max-width: clamp(280px, 35vw, 380px);
+  max-height: calc(100vh - 220px);
   text-align: center;
   align-items: center;
 }
@@ -175,7 +183,7 @@ body {
 .section-item.item-image img {
   width: 100%;
   height: auto;
-  max-height: 60vh;
+  max-height: calc(100vh - 300px);
   object-fit: contain;
   border-radius: 4px;
   margin-bottom: 15px;
@@ -183,8 +191,8 @@ body {
 
 /* Video Items */
 .section-item.item-video {
-  flex: 0 0 clamp(250px, 35vw, 350px);
-  max-width: clamp(280px, 40vw, 400px);
+  flex: 0 0 clamp(250px, 30vw, 320px);
+  max-width: clamp(280px, 35vw, 380px);
   text-align: center;
   align-items: center;
   width: 100%;
