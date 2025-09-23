@@ -225,8 +225,8 @@ body {
 ======================================== */
 .zine-title-container {
   position: relative;
-  width: auto;
-  height: auto;
+  width: 20%;
+  height: 100%;
   border: none;
   align-self: center;
   padding: clamp(20px, 5vw, 60px);
@@ -254,7 +254,7 @@ body {
   font-family: 'Rebond Grotesque', Arial, sans-serif !important;
   white-space: nowrap !important;
   line-height: 0.9 !important;
-  padding: 0 !important;
+  padding: 75px !important;
   border: none !important;
 }
 
@@ -620,8 +620,8 @@ body {
   }
 
   .zine-title-container {
-    width: auto;
-    height: auto;
+    width: 70%;
+    height: 100%;
     padding: clamp(15px, 4vw, 40px);
     display: flex;
     flex-direction: column;
