@@ -140,7 +140,7 @@ body {
   flex: 0 1 clamp(280px, 30vw, 350px);
   border-left: 3px solid #ffffff;
   padding-left: clamp(20px, 4vw, 30px);
-  margin: clamp(30px, 5vw, 60px) 0 0 130px; /* Adjusted for bigger vertical spacing */
+  /*margin: clamp(30px, 5vw, 60px) 0 0 130px;*/ /* Adjusted for bigger vertical spacing */
   max-width: clamp(320px, 55vw, 450px);
   background-color: transparent;
   white-space: pre-wrap;
@@ -254,7 +254,7 @@ body {
   font-family: 'Rebond Grotesque', Arial, sans-serif !important;
   white-space: nowrap !important;
   line-height: 0.9 !important;
-  padding: 75px !important;
+  padding: 20px !important;
   border: none !important;
 }
 
@@ -607,6 +607,8 @@ body {
   }
 
   .section-item.item-quote {
+    /* This rule overrides the large desktop margin that pushes the quote off-screen. */
+    margin: clamp(30px, 5vw, 60px) 0 0 0; 
     max-width: clamp(280px, 85vw, 380px);
     padding-left: clamp(12px, 3vw, 18px);
   }
@@ -620,16 +622,23 @@ body {
   }
 
   .zine-title-container {
-    width: 70%;
+    /*width: 70%;
     height: 100%;
     padding: clamp(15px, 4vw, 40px);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: center;*/
+    width:60%;
+    position: relative; /* Change to relative position */
+    top: 0;
+    left: 0px;
+    transform: none; /* Remove transform */
+    padding: 20px;
+    align-items: center; /* Center items for a better mobile look */
   }
 
-  .zine-title-container .zine-title {
+  /*.zine-title-container .zine-title {
     transform: rotate(-90deg);
     transform-origin: center center;
     font-size: clamp(28px, 15vw, 48px);
@@ -643,7 +652,19 @@ body {
     font-size: clamp(12px, 4vw, 16px);
     margin-top: clamp(5px, 1vw, 10px);
     white-space: nowrap;
+  }*/
+
+  .zine-title-container .zine-title,
+  .zine-title-container .zine-date {
+    transform: none; /* Remove rotate transform */
+    position: static; /* Change to static position */
+    left: auto;
+    bottom: auto;
+    font-size: 1.5em; /* Adjust font size for mobile */
+    line-height: 1.2;
+    margin-top: 5px; /* Add some spacing between title and date */
   }
+
 
   #toggle-info {
     bottom: 15px;
