@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plotter Spectrum #1</title>
+  <link rel="stylesheet" href="../style.css">
+  
+  <style>
+    /* Basic styles for loading screen */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #201E18; /* Dark background similar to your theme */
+      color: #f3f2f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Rebond Grotesque', Arial, sans-serif;
+      text-align: center;
+      z-index: 99999; /* Above everything else */
+    }
+
+    #loading-screen h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    #loading-screen .spinner {
+      border: 4px solid rgba(243, 242, 239, 0.1);
+      border-top: 4px solid #f3f2f0;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Initially hide the main zine content */
+    #zine-container {
+      display: none;
+      height: 100vh;
+      overflow-y: hidden;
+      overflow-x: auto;
+      position: relative;
+    }
+  </style>
+
+  <!-- QR Code Validator -->
+  <script src="../qr-code-validator.js"></script> 
+  
+  <!-- ZINE CONFIGURATION - Define your content here -->
+  <script>
+    window.ZINE_CONFIG = {
+      title: 'Plotter Spectrum #2',
+      
+      items: [
+        { type: 'zine-title', title: 'Plotter Spectrum #2', date: 'September 2025' },
+        {
+          type: 'section',
+          title: 'Different types of materials',
+          items: [
+         
+            { 
+              type: 'quote', 
+              content: '"Mastery comes from practice; practice comes from playful, compulsive experimentation and from a sense of wonder"', 
+              author: ' "Free Play. Improvisation in Life & Art" - Stephen Nachmanovitch, 1990' 
+            },
+             { 
+              type: 'image', 
+              src: './assets/PXL_20250415_085215959a.jpg', 
+              caption: '"Plotting experiments" - Desmond Clarke, 2025' 
+            },
+            { 
+                type: 'video', 
+                src: './assets/PXL_20250414_090304251.TS~2.mp4', 
+                caption: '' 
+            },
+            { 
+              type: 'image', 
+              src: './assets/bordadoPlotter.png', 
+              caption: '"Embroidery Experiment No.1" - Samer Dabra, 2019' 
+            }
+              
+          ]
+        },
+
+        {
+          type: 'section',
+          title: 'Light experiments',
+          items: [
+    
+            { 
+              type: 'image', 
+              src: './assets/FLOATINGPOINTS_MASTER_PRORESHQ_SB-31.jpeg', 
+              caption: '"Silhouettes" Painting with Light - Hamil Industries, 2015' 
+            }
+          ]
+        },
+
+        {
+          type: 'section',
+          title: 'Mixing colors',
+          items: [
+            { 
+              type: 'image', 
+              src: './assets/portraitPainter.png', 
+              caption: '"Plotter with no need to pre-mix colors - José Salatino, 2017' 
+            },
+               { 
+              type: 'quote', 
+              content: '“Buy it, use it, break it, fix it, trash it, change it, mail, upgrade it. Charge it, point it, zoom it, press it, snap it, work it, quick, erase it. Write it, cut it, paste it, save it, load it, check it, quick, rewrite it. Plug it, play it, burn it, rip it, drag it, drop it, zip, unzip it.”', 
+              author: ' "Technologic" - Daft Punk, 2005' 
+            }
+          ]
+        },
+
+        
+      ],
+      
+      popupContent: {
+        title: 'Experimenting with tools and materials',
+        html: `
+
+          <p><a href="https://www.instagram.com/p/DNm_PhMocXX" target="_blank"> > Desmond Clarke experiments</a></p>
+          <p><a href="https://hamillindustries.com/silhouettes/" target="_blank"> > Hamil Industries</a></p>
+          <p><a href="https://www.instagram.com/p/B3NQB74HNVc/?img_index=1" target="_blank"> > Samer Dabra </p>
+          <p><a href="" target="_blank"> > José Salatino</p>
+
+          
+        `
+      },
+      
+      settings: {
+        // Future: global settings can be added here
+      }
+    };
+  </script>
+</head>
+<body>
+  <div id="loading-screen">
+    <div class="spinner"></div>
+  </div>
+
+  <div id="zine-container">
+    <div id="scene">
+      <div class="overlay" id="global-overlay"></div>
+    </div>
+    
+    <button id="toggle-info">+ More</button>
+    
+    <div id="popup-overlay" class="popup-overlay hidden">
+      <div id="info-panel" class="popup-panel">
+        <div class="popup-header">
+          <h2>Related content</h2>
+          <button id="close-popup" class="close-btn">×</button>
+        </div>
+        <div class="popup-content">
+          <!-- Content will be populated from ZINE_CONFIG -->
+        </div>
+      </div>
+    </div>
+  </div> 
+  
+  <!-- Generic script that reads the configuration -->
+  <script src="script.js"></script>
+</body>
+</html>
