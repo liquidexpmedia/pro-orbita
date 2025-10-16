@@ -64,39 +64,71 @@
       
       items: [
         { type: 'zine-title', title: 'Plotter Spectrum #2', date: 'September 2025' },
+        
         {
           type: 'section',
-          title: 'Different types of materials',
+          title: '',
           items: [
-         
-            { 
+
+             { 
               type: 'quote', 
               content: '"Mastery comes from practice; practice comes from playful, compulsive experimentation and from a sense of wonder"', 
               author: ' "Free Play. Improvisation in Life & Art" - Stephen Nachmanovitch, 1990' 
-            },
-             { 
-              type: 'image', 
-              src: './assets/PXL_20250415_085215959a.jpg', 
-              caption: '"Plotting experiments" - Desmond Clarke, 2025' 
-            },
-            { 
-                type: 'video', 
-                src: './assets/PXL_20250414_090304251.TS~2.mp4', 
-                caption: '' 
-            },
-            { 
-              type: 'image', 
-              src: './assets/bordadoPlotter.png', 
-              caption: '"Embroidery Experiment No.1" - Samer Dabra, 2019' 
-            }
-              
+            } 
           ]
         },
 
         {
           type: 'section',
+          title: 'Playing with materials',
+          items: [
+         
+             { 
+              type: 'image', 
+              src: './assets/PXL_20250415_085215959a.jpg', 
+              caption: '"Plotting experiments" - Desmond Clarke, 2025' 
+            }
+          ]
+        },
+         {
+          type: 'section',
+          title: '',
+          items: [
+
+            { 
+                type: 'video', 
+                src: './assets/PXL_20250414_090304251.TS~2.mp4', 
+                caption: '' 
+            }
+          ]
+        },
+ 
+        {
+          type: 'section',
+          title: 'Custom software for embroidery?',
+          items: [
+    
+            { 
+              type: 'image', 
+              src: './assets/bordadoPlotter.png', 
+              caption: '"Embroidery Experiment No.1" - Samer Dabra, 2019'
+            },
+            { 
+              type: 'text', 
+              content: 'I really appreciate it when creatives find their style and experiment with it, maintaining their essence regardless of the machine, tools or materials used. That`s what I like about Samer Dabra`s pieces. Looking at his drawings, I`m curious about how he adapted the software he used with a pen plotter for an embroidery machine.' 
+            }
+          ]
+        },
+
+
+        {
+          type: 'section',
           title: 'Light experiments',
           items: [
+           { 
+              type: 'text', 
+              content: '`Silhouettes` is one of the Hamill Industries projects that caught my attention the most. Their experimentation with different techniques is very original. They use a plotter mechanism with a light instead of a pen. This allows them to use a camera to capture the paths of the moving light.' 
+            },
     
             { 
               type: 'image', 
@@ -111,29 +143,43 @@
           title: 'Mixing colors',
           items: [
             { 
+              type: 'text', 
+              content: 'I have grown alongside the development of Jose`s Portrait Painter Project. I am so used to having all these crazy mixes of art and technology at home that I sometimes forget how surprising these machines are to others. What makes José`s plotter special is that he hasnt forgotten his traditional painting skills. He applied the technique of mixing colours when he built his plotter. This makes it easy to achieve a wide range of colours with a limited palette.' 
+            },
+            { 
               type: 'image', 
               src: './assets/portraitPainter.png', 
               caption: '"Plotter with no need to pre-mix colors - José Salatino, 2017' 
-            },
+            }
+          ]
+        },
+        {
+          type: 'section',
+          title: '',
+          items: [
+            
                { 
               type: 'quote', 
               content: '“Buy it, use it, break it, fix it, trash it, change it, mail, upgrade it. Charge it, point it, zoom it, press it, snap it, work it, quick, erase it. Write it, cut it, paste it, save it, load it, check it, quick, rewrite it. Plug it, play it, burn it, rip it, drag it, drop it, zip, unzip it.”', 
               author: ' "Technologic" - Daft Punk, 2005' 
             }
           ]
-        },
+        }
 
         
       ],
       
       popupContent: {
-        title: 'Experimenting with tools and materials',
+        title: 'References',
         html: `
-
-          <p><a href="https://www.instagram.com/p/DNm_PhMocXX" target="_blank"> > Desmond Clarke experiments</a></p>
-          <p><a href="https://hamillindustries.com/silhouettes/" target="_blank"> > Hamil Industries</a></p>
-          <p><a href="https://www.instagram.com/p/B3NQB74HNVc/?img_index=1" target="_blank"> > Samer Dabra </p>
-          <p><a href="" target="_blank"> > José Salatino</p>
+          <p>I find it really interesting how these artists use different materials and tools with their plotters. 
+          These examples make it easier to understand how the machine is an extension of the artist's creativity.</p>
+          <p><a href="https://www.instagram.com/p/DNm_PhMocXX" target="_blank">  Desmond Clarke experiments</a></p>
+          <p><a href="https://hamillindustries.com/silhouettes/" target="_blank">  Hamil Industries</a></p>
+          <p><a href="https://www.instagram.com/p/B3NQB74HNVc/?img_index=1" target="_blank">  Samer Dabra </p>
+          <p><a href="https://www.instagram.com/josevicentesalatino/" target="_blank">  José Salatino</p>
+          <p><a href="https://www.instagram.com/p/DPTqr9HDNc4/" target="_blank"> @axiplot </p>
+          
 
           
         `
@@ -148,6 +194,8 @@
 <body>
   <div id="loading-screen">
     <div class="spinner"></div>
+    <p>Please DO NOT share this link. <br>It should be access from the physical zine. </p>
+    <p>This is a live archive made by Flor Salatino. <br> I'll be adding content that I found related to this zine.</p>
   </div>
 
   <div id="zine-container">
